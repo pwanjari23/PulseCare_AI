@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { registerPatientRules, registerDoctorRules } = require('../validators/auth.validator');
+const { registerPatientRules, registerDoctorRules, loginRules } = require('../validators/auth.validator');
 const authController = require('../controllers/auth.controller');
 
 const router = Router();
@@ -15,5 +15,11 @@ router.post('/register/patient', registerPatientRules, authController.registerPa
  * POST /api/auth/register/doctor
  */
 router.post('/register/doctor', registerDoctorRules, authController.registerDoctor);
+
+/**
+ * User login endpoint
+ * POST /api/auth/login
+ */
+router.post('/login', loginRules, authController.login);
 
 module.exports = router;

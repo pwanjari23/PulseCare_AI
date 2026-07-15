@@ -15,10 +15,8 @@ const registerPatient = async (req, res, next) => {
   }
 
   try {
-    // Only extract validated and sanitized fields (safeguarding against unexpected parameters)
     const validatedData = matchedData(req, { includeOptionals: true });
     
-    // Inject connection audit headers
     validatedData.ipAddress = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
     validatedData.userAgent = req.headers['user-agent'] || 'Unknown';
 
@@ -45,10 +43,8 @@ const registerDoctor = async (req, res, next) => {
   }
 
   try {
-    // Only extract validated and sanitized fields
     const validatedData = matchedData(req, { includeOptionals: true });
 
-    // Inject connection audit headers
     validatedData.ipAddress = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
     validatedData.userAgent = req.headers['user-agent'] || 'Unknown';
 
@@ -66,7 +62,36 @@ const registerDoctor = async (req, res, next) => {
   }
 };
 
+/**
+ * Handles user login requests, authenticates credentials, and issues session tokens
+ * @param {object} req - Express request
+ * @param {object} res - Express response
+ * @param {function} next - Express next middleware handler
+ */
+const login = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(new ApiError(400, 'Validation failed', errors.array()));
+  }
+
+  try {
+    const validatedData = matchedData(req);
+
+    validatedData.ipAddress = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
+    validatedData.userAgent = req.headers['user-agent'] || 'Unknown';
+
+    const authResultDto = await authService.loginUser(validatedData);
+
+    return res.status(200).json(
+      new ApiResponse(200, authResultDto, 'Login completed successfully.')
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   registerPatient,
-  registerDoctor
+  registerDoctor,
+  login
 };
