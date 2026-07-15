@@ -16,7 +16,7 @@ router.get('/health', (req, res) => {
 });
 
 // Future routes can be registered here:
-// router.use('/auth', authRouter);
+router.use('/auth', require('../auth/routes/auth.routes'));
 // router.use('/patients', patientRouter);
 // router.use('/doctors', doctorRouter);
 

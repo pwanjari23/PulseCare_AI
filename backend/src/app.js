@@ -37,6 +37,7 @@ app.use(
 
 // Register API Routes
 app.use('/api/v1', routes);
+app.use('/api/auth', require('./auth/routes/auth.routes'));
 
 // Handle 404 Route Not Found
 app.use((req, res, next) => {
