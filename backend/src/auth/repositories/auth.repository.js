@@ -48,13 +48,15 @@ const findUserWithProfile = async (email) => {
  * @returns {Promise<boolean>} True on success
  */
 const updateLastLogin = async (userId) => {
-  const user = await User.findByPk(userId);
-  if (user && user.role === 'Doctor') {
-    await Doctor.update(
-      { lastActiveAt: new Date() },
-      { where: { id: userId } }
-    );
-  }
+  await User.update(
+    {
+      lastLoginAt: new Date(),
+    },
+    {
+      where: { id: userId },
+    }
+  );
+
   return true;
 };
 
