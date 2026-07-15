@@ -2,22 +2,30 @@ const jwt = require('jsonwebtoken');
 const config = require('#config/jwt.js');
 
 /**
- * Generates a short-lived access token
- * @param {object} payload - Session identity parameters
+ * Generates a short-lived access token with minimized payload
+ * @param {object} user - The user instance
  * @returns {string} The signed JWT access token
  */
-const generateAccessToken = (payload) => {
+const generateAccessToken = (user) => {
+  const payload = {
+    id: user.id,
+    role: user.role,
+    email: user.email
+  };
   return jwt.sign(payload, config.accessSecret, {
     expiresIn: config.accessExpiry
   });
 };
 
 /**
- * Generates a long-lived refresh token
- * @param {object} payload - Session identity parameters
+ * Generates a long-lived refresh token with minimal payload
+ * @param {object} user - The user instance
  * @returns {string} The signed JWT refresh token
  */
-const generateRefreshToken = (payload) => {
+const generateRefreshToken = (user) => {
+  const payload = {
+    id: user.id
+  };
   return jwt.sign(payload, config.refreshSecret, {
     expiresIn: config.refreshExpiry
   });
