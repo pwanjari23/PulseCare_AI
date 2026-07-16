@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
         field: 'medication_name',
       },
       dosage: {
-        type: DataTypes.STRING(50),
+        type: DataTypes.STRING(100),
         allowNull: false,
       },
       frequency: {

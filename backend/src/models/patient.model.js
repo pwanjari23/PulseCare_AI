@@ -158,6 +158,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         field: 'last_vital_submitted_at',
       },
+      weightKg: {
+        type: DataTypes.DECIMAL(5, 2),
+        allowNull: true,
+        field: 'weight_kg',
+      },
       profileCompletionPct: {
         type: DataTypes.TINYINT.UNSIGNED,
         allowNull: false,

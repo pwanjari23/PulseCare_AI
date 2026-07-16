@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       notificationType: {
-        type: DataTypes.ENUM('VitalAlert', 'PrescriptionIssued', 'AppointmentScheduled', 'RequestReceived', 'System'),
+        type: DataTypes.ENUM('Appointment', 'VitalAlert', 'DoctorApproval', 'Prescription', 'Reminder', 'System'),
         allowNull: false,
         field: 'notification_type',
       },
@@ -56,6 +56,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BIGINT.UNSIGNED,
         allowNull: true,
         field: 'related_entity_id',
+      },
+      payload: {
+        type: DataTypes.JSON,
+        allowNull: true
       },
     },
     {

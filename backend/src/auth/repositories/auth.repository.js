@@ -110,6 +110,61 @@ const insertActivityLog = async (logData, transaction) => {
   return ActivityLog.create(logData, { transaction });
 };
 
+/**
+ * Finds a refresh token record by token string
+ * @param {string} token - The refresh token
+ * @param {object} [transaction] - Optional Sequelize transaction object
+ * @returns {Promise<RefreshToken|null>} The found refresh token instance or null
+ */
+const findRefreshToken = async (token, transaction) => {
+  return RefreshToken.findOne({ where: { token }, transaction });
+};
+
+/**
+ * Deletes a refresh token record
+ * @param {string} token - The refresh token to delete
+ * @param {object} [transaction] - Optional Sequelize transaction object
+ * @returns {Promise<number>} Number of destroyed rows
+ */
+const deleteRefreshToken = async (token, transaction) => {
+  return RefreshToken.destroy({ where: { token }, transaction });
+};
+
+/**
+ * Deletes all refresh tokens for a user
+ * @param {number|string} userId - The user ID
+ * @param {object} [transaction] - Optional Sequelize transaction object
+ * @returns {Promise<number>} Number of destroyed rows
+ */
+const deleteAllUserRefreshTokens = async (userId, transaction) => {
+  return RefreshToken.destroy({ where: { userId }, transaction });
+};
+
+/**
+ * Updates an existing refresh token with a new token and expiry time (rotation)
+ * @param {string} oldToken - The old refresh token
+ * @param {string} newToken - The new refresh token
+ * @param {Date} expiresAt - The new expiry date
+ * @param {object} [transaction] - Optional Sequelize transaction object
+ * @returns {Promise<[number]>} The number of affected rows
+ */
+const updateRefreshToken = async (oldToken, newToken, expiresAt, transaction) => {
+  return RefreshToken.update(
+    { token: newToken, expiresAt },
+    { where: { token: oldToken }, transaction }
+  );
+};
+
+/**
+ * Finds a user by their unique primary key ID
+ * @param {number|string} id - The user ID
+ * @param {object} [transaction] - Optional Sequelize transaction
+ * @returns {Promise<User|null>} The found user or null
+ */
+const findUserById = async (id, transaction) => {
+  return User.findByPk(id, { transaction });
+};
+
 module.exports = {
   findUserByEmail,
   findUserByPhone,
@@ -119,5 +174,10 @@ module.exports = {
   createUser,
   createPatientProfile,
   createDoctorProfile,
-  insertActivityLog
+  insertActivityLog,
+  findRefreshToken,
+  deleteRefreshToken,
+  deleteAllUserRefreshTokens,
+  updateRefreshToken,
+  findUserById
 };

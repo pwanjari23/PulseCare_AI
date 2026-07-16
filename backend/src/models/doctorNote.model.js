@@ -15,6 +15,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
+      DoctorNote.belongsTo(models.Appointment, {
+        foreignKey: 'appointment_id',
+        as: 'appointment',
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
+      });
     }
   }
 
@@ -43,10 +49,30 @@ module.exports = (sequelize, DataTypes) => {
           key: 'id',
         },
       },
+      appointmentId: {
+        type: DataTypes.BIGINT.UNSIGNED,
+        allowNull: true,
+        field: 'appointment_id',
+        references: {
+          model: 'appointments',
+          key: 'id',
+        },
+      },
+      title: {
+        type: DataTypes.STRING(200),
+        allowNull: false,
+        defaultValue: 'Clinical Note',
+      },
       noteContent: {
         type: DataTypes.TEXT,
         allowNull: false,
         field: 'note_content',
+      },
+      isArchived: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+        field: 'is_archived',
       },
     },
     {
@@ -54,7 +80,7 @@ module.exports = (sequelize, DataTypes) => {
       modelName: 'DoctorNote',
       tableName: 'doctor_notes',
       underscored: true,
-      paranoid: false, // Soft delete disabled
+      paranoid: false,
     }
   );
 

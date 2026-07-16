@@ -90,8 +90,64 @@ const login = async (req, res, next) => {
   }
 };
 
+/**
+ * Handles Token Refresh HTTP requests
+ * @param {object} req - Express request
+ * @param {object} res - Express response
+ * @param {function} next - Express next middleware handler
+ */
+const refreshToken = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(new ApiError(400, 'Validation failed', errors.array()));
+  }
+
+  try {
+    const { refreshToken } = req.body; // Transport layer extraction (could be req.cookies.refreshToken in the future)
+    const ipAddress = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
+    const userAgent = req.headers['user-agent'] || 'Unknown';
+
+    const resultDto = await authService.refreshAccessToken(refreshToken, { ipAddress, userAgent });
+
+    return res.status(200).json(
+      new ApiResponse(200, resultDto, 'Access token refreshed successfully.')
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
+
+/**
+ * Handles User Logout HTTP requests
+ * @param {object} req - Express request
+ * @param {object} res - Express response
+ * @param {function} next - Express next middleware handler
+ */
+const logout = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(new ApiError(400, 'Validation failed', errors.array()));
+  }
+
+  try {
+    const { refreshToken } = req.body; // Transport layer extraction (could be req.cookies.refreshToken in the future)
+    const ipAddress = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
+    const userAgent = req.headers['user-agent'] || 'Unknown';
+
+    await authService.logoutUser(refreshToken, { ipAddress, userAgent });
+
+    return res.status(200).json(
+      new ApiResponse(200, null, 'Logged out successfully.')
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   registerPatient,
   registerDoctor,
-  login
+  login,
+  refreshToken,
+  logout
 };

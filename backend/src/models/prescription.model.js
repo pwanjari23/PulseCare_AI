@@ -15,6 +15,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'RESTRICT',
         onUpdate: 'CASCADE',
       });
+      Prescription.belongsTo(models.Appointment, {
+        foreignKey: 'appointment_id',
+        as: 'appointment',
+        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE',
+      });
       Prescription.hasMany(models.PrescriptionItem, {
         foreignKey: 'prescription_id',
         as: 'items',
@@ -49,6 +55,15 @@ module.exports = (sequelize, DataTypes) => {
           key: 'id',
         },
       },
+      appointmentId: {
+        type: DataTypes.BIGINT.UNSIGNED,
+        allowNull: true,
+        field: 'appointment_id',
+        references: {
+          model: 'appointments',
+          key: 'id',
+        },
+      },
       clinicalNotes: {
         type: DataTypes.TEXT,
         allowNull: true,
@@ -61,7 +76,7 @@ module.exports = (sequelize, DataTypes) => {
         field: 'prescribed_at',
       },
       diagnosis: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.TEXT,
         allowNull: true,
       },
       followUpDate: {

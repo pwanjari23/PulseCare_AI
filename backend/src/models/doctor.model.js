@@ -146,8 +146,18 @@ module.exports = (sequelize, DataTypes) => {
         field: 'consultation_fee',
       },
       languages: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.JSON,
         allowNull: true,
+      },
+      bio: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      profileCompletionPct: {
+        type: DataTypes.TINYINT.UNSIGNED,
+        allowNull: false,
+        defaultValue: 0,
+        field: 'profile_completion_pct',
       },
       isVerified: {
         type: DataTypes.BOOLEAN,

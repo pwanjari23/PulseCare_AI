@@ -17,14 +17,10 @@ const generateAccessToken = (user) => {
   });
 };
 
-/**
- * Generates a long-lived refresh token with minimal payload
- * @param {object} user - The user instance
- * @returns {string} The signed JWT refresh token
- */
 const generateRefreshToken = (user) => {
   const payload = {
-    id: user.id
+    id: user.id,
+    jti: require('crypto').randomBytes(16).toString('hex')
   };
   return jwt.sign(payload, config.refreshSecret, {
     expiresIn: config.refreshExpiry

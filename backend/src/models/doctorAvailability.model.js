@@ -47,13 +47,19 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         field: 'end_time',
       },
+      isAvailable: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+        field: 'is_available',
+      },
     },
     {
       sequelize,
       modelName: 'DoctorAvailability',
       tableName: 'doctor_availabilities',
       underscored: true,
-      paranoid: false, // Soft delete disabled
+      paranoid: true,
     }
   );
 

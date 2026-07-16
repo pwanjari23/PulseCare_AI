@@ -1,9 +1,9 @@
 const { sequelize } = require('#models/index.js');
 const authRepository = require('../repositories/auth.repository');
 const { hashPassword, comparePassword } = require('../utils/password');
-const { generateAccessToken, generateRefreshToken } = require('../utils/jwt');
+const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = require('../utils/jwt');
 const { ApiError } = require('#utils/apiResponse.js');
-const { PATIENT_REGISTERED, DOCTOR_REGISTRATION_REQUESTED } = require('#constants/activity.constants.js');
+const { PATIENT_REGISTERED, DOCTOR_REGISTRATION_REQUESTED, LOGIN_REFRESH, LOGOUT, REFRESH_TOKEN_REVOKED } = require('#constants/activity.constants.js');
 const logger = require('#config/logger.js');
 
 /**
@@ -242,8 +242,191 @@ const loginUser = async (credentials) => {
   };
 };
 
+/**
+ * Parses JWT expiry string to seconds.
+ * @param {string|number} expiry - Expiry duration
+ * @returns {number} duration in seconds
+ */
+const parseExpiryToSeconds = (expiry) => {
+  if (!expiry) return 900;
+  if (typeof expiry === 'number') return expiry;
+  const unit = expiry.slice(-1);
+  const val = parseInt(expiry.slice(0, -1), 10);
+  if (isNaN(val)) return 900;
+  switch (unit) {
+    case 's': return val;
+    case 'm': return val * 60;
+    case 'h': return val * 3600;
+    case 'd': return val * 86400;
+    default: return parseInt(expiry, 10) || 900;
+  }
+};
+
+/**
+ * Refreshes an expired access token using a valid refresh token.
+ * Uses database transaction, token rotation, and activity logs.
+ * @param {string} refreshToken - The refresh token
+ * @param {object} metadata - Client IP and User Agent metadata
+ * @returns {Promise<object>} Fresh tokens and user details DTO
+ */
+const refreshAccessToken = async (refreshToken, metadata = {}) => {
+  let transactionFinished = false;
+  const transaction = await sequelize.transaction();
+  try {
+    // 2. Validate Refresh Token (JWT signature)
+    let decoded;
+    try {
+      decoded = verifyRefreshToken(refreshToken);
+    } catch (jwtError) {
+      logger.warn(`Refresh token signature verification failed: ${jwtError.message}`);
+      throw new ApiError(401, 'Invalid or expired refresh token.');
+    }
+
+    // 3. Find Database Record
+    const storedToken = await authRepository.findRefreshToken(refreshToken, transaction);
+    if (!storedToken) {
+      logger.warn('Refresh token database record not found.');
+      
+      // Rollback main transaction before logging failure to avoid lock issues
+      await transaction.rollback();
+      transactionFinished = true;
+      
+      // Log REFRESH_TOKEN_REVOKED activity outside the transaction so it persists
+      try {
+        await authRepository.insertActivityLog({
+          userId: decoded.id,
+          action: REFRESH_TOKEN_REVOKED,
+          module: 'Authentication',
+          entity: 'User',
+          entityId: decoded.id,
+          ipAddress: metadata.ipAddress || '127.0.0.1',
+          userAgent: metadata.userAgent || 'Unknown',
+          created_at: new Date()
+        });
+      } catch (logErr) {
+        logger.error(`Failed to log REFRESH_TOKEN_REVOKED: ${logErr.message}`);
+      }
+
+      throw new ApiError(401, 'Invalid or expired refresh token.');
+    }
+
+    // 4. Load User
+    const user = await authRepository.findUserById(storedToken.userId, transaction);
+    if (!user) {
+      logger.warn(`User no longer exists for User ID ${storedToken.userId}`);
+      throw new ApiError(401, 'Invalid or expired refresh token.');
+    }
+
+    // 5. Validate User Status
+    if (user.status !== 'Active') {
+      logger.warn(`Refresh rejected: User status is [${user.status}] for User ID ${user.id}`);
+      throw new ApiError(403, 'Your account is inactive or suspended.');
+    }
+
+    // 6. Generate New Tokens
+    const newAccessToken = generateAccessToken(user);
+    const newRefreshToken = generateRefreshToken(user);
+    
+    // Rotate 7 days expiry
+    const newExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    // 7. Rotate Refresh Token
+    await authRepository.updateRefreshToken(refreshToken, newRefreshToken, newExpiresAt, transaction);
+
+    // 8. Insert Activity Log
+    await authRepository.insertActivityLog({
+      userId: user.id,
+      action: LOGIN_REFRESH,
+      module: 'Authentication',
+      entity: 'User',
+      entityId: user.id,
+      ipAddress: metadata.ipAddress || '127.0.0.1',
+      userAgent: metadata.userAgent || 'Unknown',
+      created_at: new Date()
+    }, transaction);
+
+    // 9. Commit Transaction
+    await transaction.commit();
+    transactionFinished = true;
+
+    const config = require('#config/jwt.js');
+    const expiresIn = parseExpiryToSeconds(config.accessExpiry);
+
+    // 10. Return Response DTO (clean, no passwordHash/internal metadata)
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        status: user.status
+      },
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+      expiresIn
+    };
+  } catch (error) {
+    if (!transactionFinished) {
+      await transaction.rollback();
+    }
+    throw error;
+  }
+};
+
+/**
+ * Invalidates user refresh token and records LOGOUT activity.
+ * @param {string} refreshToken - The refresh token
+ * @param {object} metadata - Client IP and User Agent metadata
+ * @returns {Promise<object>} success response object
+ */
+const logoutUser = async (refreshToken, metadata = {}) => {
+  let transactionFinished = false;
+  const transaction = await sequelize.transaction();
+  try {
+    // 1. Verify token signature
+    let decoded;
+    try {
+      decoded = verifyRefreshToken(refreshToken);
+    } catch (jwtError) {
+      logger.warn(`Logout signature verification failed: ${jwtError.message}`);
+      throw new ApiError(401, 'Invalid or expired refresh token.');
+    }
+
+    // 2. Find Database Record & Delete it
+    const storedToken = await authRepository.findRefreshToken(refreshToken, transaction);
+    if (!storedToken) {
+      logger.warn('Logout failed: Token record not found.');
+      throw new ApiError(401, 'Invalid or expired refresh token.');
+    }
+
+    await authRepository.deleteRefreshToken(refreshToken, transaction);
+
+    // 3. Record LOGOUT activity
+    await authRepository.insertActivityLog({
+      userId: decoded.id,
+      action: LOGOUT,
+      module: 'Authentication',
+      entity: 'User',
+      entityId: decoded.id,
+      ipAddress: metadata.ipAddress || '127.0.0.1',
+      userAgent: metadata.userAgent || 'Unknown',
+      created_at: new Date()
+    }, transaction);
+
+    await transaction.commit();
+    transactionFinished = true;
+    return { success: true };
+  } catch (error) {
+    if (!transactionFinished) {
+      await transaction.rollback();
+    }
+    throw error;
+  }
+};
+
 module.exports = {
   registerPatient,
   registerDoctor,
-  loginUser
+  loginUser,
+  refreshAccessToken,
+  logoutUser
 };

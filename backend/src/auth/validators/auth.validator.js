@@ -168,8 +168,19 @@ const registerDoctorRules = [
     .isDecimal().withMessage('Consultation fee must be a valid decimal number')
 ];
 
+/**
+ * Validation rules for token refresh and logout operations
+ */
+const refreshTokenRules = [
+  body('refreshToken')
+    .trim()
+    .notEmpty().withMessage('Refresh token is required')
+    .isString().withMessage('Refresh token must be a string')
+];
+
 module.exports = {
   loginRules,
   registerPatientRules,
-  registerDoctorRules
+  registerDoctorRules,
+  refreshTokenRules
 };
