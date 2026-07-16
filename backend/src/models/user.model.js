@@ -15,6 +15,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
+      User.hasOne(models.PasswordResetToken, {
+        foreignKey: 'user_id',
+        as: 'passwordResetToken',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
       User.hasMany(models.RefreshToken, {
         foreignKey: 'user_id',
         as: 'refreshTokens',

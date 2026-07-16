@@ -11,6 +11,7 @@ const {
 } = require('#constants/activity.constants.js');
 const { ApiError } = require('#utils/apiResponse.js');
 const logger = require('#config/logger.js');
+const emailService = require('../../email/config/email');
 
 /**
  * Maps incoming items array to PrescriptionItem DB fields.
@@ -135,6 +136,20 @@ const createPrescription = async (doctorUserId, data, metadata = {}) => {
 
     // 11. Return refreshed DTO
     const full = await prescriptionRepository.findPrescriptionById(prescription.id);
+
+    // Send email notification (non-blocking)
+    if (full && full.patient && full.patient.user && full.patient.user.email) {
+      emailService.sendPrescriptionEmail(full.patient.user.email, {
+        patientName: `${full.patient.firstName} ${full.patient.lastName}`,
+        doctorName: `${full.doctor.firstName} ${full.doctor.lastName}`,
+        prescriptionId: full.id,
+        diagnosis: full.diagnosis,
+        items: full.items
+      }).catch((err) => {
+        logger.error(`[PrescriptionService] Non-blocking prescription email dispatch failed: ${err.message}`);
+      });
+    }
+
     return toPrescriptionDto(full);
   } catch (error) {
     if (!transactionFinished) {

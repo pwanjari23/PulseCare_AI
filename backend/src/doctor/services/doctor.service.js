@@ -6,6 +6,7 @@ const { PROFILE_COMPLETION_FIELDS } = require('../constants/doctor.constants');
 const { DOCTOR_PROFILE_UPDATED } = require('#constants/activity.constants.js');
 const { ApiError } = require('#utils/apiResponse.js');
 const logger = require('#config/logger.js');
+const emailService = require('../../email/config/email');
 
 /**
  * Calculates the profile completion percentage for a doctor dynamically.
@@ -202,9 +203,110 @@ const getDoctorProfileForAdmin = async (id) => {
   return toPrivateDoctorDto(doctor);
 };
 
+/**
+ * Approves a doctor application, activating their account and verifying their profile.
+ */
+const approveDoctor = async (doctorId, adminUserId = null, metadata = {}) => {
+  const doctor = await doctorRepository.findDoctorByUserId(doctorId);
+  if (!doctor) {
+    throw new ApiError(404, 'Doctor profile not found.');
+  }
+
+  const transaction = await sequelize.transaction();
+  try {
+    await doctor.update({ isVerified: true }, { transaction });
+    if (doctor.user) {
+      await doctor.user.update({ status: 'Active' }, { transaction });
+    }
+
+    if (adminUserId) {
+      await authRepository.insertActivityLog({
+        userId: adminUserId,
+        action: 'DOCTOR_APPROVED',
+        module: 'Doctor Management',
+        entity: 'Doctor',
+        entityId: doctorId,
+        ipAddress: metadata.ipAddress || '127.0.0.1',
+        userAgent: metadata.userAgent || 'Unknown',
+        created_at: new Date()
+      }, transaction);
+    }
+
+    await transaction.commit();
+
+    // Send email (non-blocking)
+    if (doctor.user && doctor.user.email) {
+      emailService.sendDoctorApprovalEmail(doctor.user.email, {
+        firstName: doctor.firstName,
+        email: doctor.user.email
+      }).catch((err) => {
+        logger.error(`[DoctorService] Non-blocking doctor approval email dispatch failed: ${err.message}`);
+      });
+    }
+
+    return { id: doctorId, isVerified: true, status: 'Active' };
+  } catch (error) {
+    await transaction.rollback();
+    logger.error(`Doctor approval failed for ID ${doctorId}. Error: ${error.message}`);
+    throw error;
+  }
+};
+
+/**
+ * Rejects a doctor application.
+ */
+const rejectDoctor = async (doctorId, reason, adminUserId = null, metadata = {}) => {
+  const doctor = await doctorRepository.findDoctorByUserId(doctorId);
+  if (!doctor) {
+    throw new ApiError(404, 'Doctor profile not found.');
+  }
+
+  const transaction = await sequelize.transaction();
+  try {
+    await doctor.update({ isVerified: false }, { transaction });
+    if (doctor.user) {
+      await doctor.user.update({ status: 'Inactive' }, { transaction });
+    }
+
+    if (adminUserId) {
+      await authRepository.insertActivityLog({
+        userId: adminUserId,
+        action: 'DOCTOR_REJECTED',
+        module: 'Doctor Management',
+        entity: 'Doctor',
+        entityId: doctorId,
+        ipAddress: metadata.ipAddress || '127.0.0.1',
+        userAgent: metadata.userAgent || 'Unknown',
+        created_at: new Date()
+      }, transaction);
+    }
+
+    await transaction.commit();
+
+    // Send email (non-blocking)
+    if (doctor.user && doctor.user.email) {
+      emailService.sendDoctorRejectionEmail(doctor.user.email, {
+        firstName: doctor.firstName,
+        email: doctor.user.email,
+        reason
+      }).catch((err) => {
+        logger.error(`[DoctorService] Non-blocking doctor rejection email dispatch failed: ${err.message}`);
+      });
+    }
+
+    return { id: doctorId, isVerified: false, status: 'Inactive' };
+  } catch (error) {
+    await transaction.rollback();
+    logger.error(`Doctor rejection failed for ID ${doctorId}. Error: ${error.message}`);
+    throw error;
+  }
+};
+
 module.exports = {
   getDoctorProfile,
   updateDoctorProfile,
   getPublicDoctorProfile,
-  getDoctorProfileForAdmin
+  getDoctorProfileForAdmin,
+  approveDoctor,
+  rejectDoctor
 };

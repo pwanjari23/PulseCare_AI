@@ -14,6 +14,20 @@ const errorHandler = (err, req, res, next) => {
     errors = err.errors || [];
   }
 
+  // Handle database-specific Sequelize errors securely to prevent exposing schema details
+  if (err.name === 'SequelizeValidationError' || err.name === 'SequelizeUniqueConstraintError') {
+    statusCode = 400;
+    message = 'Validation failed.';
+    errors = err.errors ? err.errors.map((e) => ({
+      field: e.path,
+      message: e.message
+    })) : [];
+  } else if (err.name && err.name.startsWith('Sequelize')) {
+    statusCode = 500;
+    message = 'An internal database error occurred.';
+    errors = [];
+  }
+
   const response = {
     success: false,
     message,

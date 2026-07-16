@@ -1,18 +1,36 @@
 const { Router } = require('express');
 const { ApiResponse } = require('../utils/apiResponse');
+const { sequelize } = require('../models');
 
 const router = Router();
 
 /**
- * Health check route to verify service availability
+ * Health check route to verify service availability and database connectivity
  */
-router.get('/health', (req, res) => {
+router.get('/health', async (req, res) => {
+  let dbStatus = 'UP';
+  try {
+    await sequelize.authenticate();
+  } catch (error) {
+    dbStatus = 'DOWN';
+  }
+
+  const isHealthy = dbStatus === 'UP';
   const healthInfo = {
-    status: 'UP',
+    status: isHealthy ? 'UP' : 'DOWN',
     timestamp: new Date(),
     uptime: process.uptime(),
+    database: dbStatus,
   };
-  res.status(200).json(new ApiResponse(200, healthInfo, 'PulseCare AI API is running healthy'));
+
+  const statusCode = isHealthy ? 200 : 503;
+  res.status(statusCode).json(
+    new ApiResponse(
+      statusCode,
+      healthInfo,
+      isHealthy ? 'PulseCare AI API is running healthy' : 'Database connection unavailable'
+    )
+  );
 });
 
 // Future routes can be registered here:
@@ -28,6 +46,7 @@ router.use('/doctor-notes', require('../doctor-notes/routes/doctor-note.routes')
 router.use('/health-summary', require('../ai/routes/health-summary.routes'));
 router.use('/dashboard', require('../dashboard/routes/dashboard.routes'));
 router.use('/upload', require('../upload/routes/upload.routes'));
+router.use('/password-reset', require('../password-reset/routes/password-reset.routes'));
 
 // Temporary protected verification routes for testing middleware
 const { authenticate, authorize } = require('../auth/middleware/auth.middleware');

@@ -5,6 +5,7 @@ const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = requir
 const { ApiError } = require('#utils/apiResponse.js');
 const { PATIENT_REGISTERED, DOCTOR_REGISTRATION_REQUESTED, LOGIN_REFRESH, LOGOUT, REFRESH_TOKEN_REVOKED } = require('#constants/activity.constants.js');
 const logger = require('#config/logger.js');
+const emailService = require('../../email/config/email');
 
 /**
  * Registers a new Patient user and profile within a transaction
@@ -62,6 +63,11 @@ const registerPatient = async (patientData) => {
 
     await transaction.commit();
     logger.info(`Patient registration completed successfully for user: ${user.email}`);
+
+    // Send welcome email (non-blocking)
+    emailService.sendWelcomeEmail(user.email, { firstName: patientData.firstName }).catch((err) => {
+      logger.error(`[AuthService] Non-blocking patient welcome email dispatch failed: ${err.message}`);
+    });
 
     return {
       id: user.id,
@@ -128,6 +134,11 @@ const registerDoctor = async (doctorData) => {
 
     await transaction.commit();
     logger.info(`Doctor registration application submitted successfully for user: ${user.email}`);
+
+    // Send doctor registration confirmation email (non-blocking)
+    emailService.sendDoctorRegistrationEmail(user.email, { firstName: doctorData.firstName }).catch((err) => {
+      logger.error(`[AuthService] Non-blocking doctor registration email dispatch failed: ${err.message}`);
+    });
 
     return {
       id: user.id,

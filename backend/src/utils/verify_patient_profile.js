@@ -3,8 +3,12 @@ const { sequelize } = require('../models');
 const { hashPassword } = require('../auth/utils/password');
 const patientService = require('../patient/services/patient.service');
 
-const BASE_API_URL = 'http://localhost:5000/api/v1';
-const BASE_AUTH_URL = 'http://localhost:5000/api/auth';
+delete process.env.PORT;
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
+const port = process.env.PORT || 5000;
+const BASE_API_URL = `http://localhost:${port}/api/v1`;
+const BASE_AUTH_URL = `http://localhost:${port}/api/auth`;
 
 async function runTests() {
   console.log('=== Starting Patient Profile Management Verification Tests ===');

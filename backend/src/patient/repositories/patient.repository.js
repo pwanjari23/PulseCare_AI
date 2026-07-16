@@ -10,7 +10,7 @@ const { Patient, User, DoctorRequest, Appointment } = require('#models/index.js'
 const findPatientByUserId = async (userId, transaction) => {
   return Patient.findOne({
     where: { id: userId },
-    include: [{ model: User, as: 'user' }],
+    include: [{ model: User, as: 'user', attributes: { exclude: ['passwordHash', 'password_hash'] } }],
     transaction
   });
 };
@@ -34,7 +34,7 @@ const findPatientById = async (id, transaction) => {
 const findPatientWithUser = async (id, transaction) => {
   return Patient.findOne({
     where: { id },
-    include: [{ model: User, as: 'user' }],
+    include: [{ model: User, as: 'user', attributes: { exclude: ['passwordHash', 'password_hash'] } }],
     transaction
   });
 };

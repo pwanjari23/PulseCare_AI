@@ -1,4 +1,4 @@
-const { Prescription, PrescriptionItem, Doctor, Patient, Specialization, Appointment } = require('#models/index.js');
+const { Prescription, PrescriptionItem, Doctor, Patient, Specialization, Appointment, User } = require('#models/index.js');
 
 /**
  * Finds a prescription by primary key, including all associations.
@@ -9,9 +9,16 @@ const findPrescriptionById = async (id, transaction) => {
       {
         model: Doctor,
         as: 'doctor',
-        include: [{ model: Specialization, as: 'specialization' }]
+        include: [
+          { model: Specialization, as: 'specialization' },
+          { model: User, as: 'user', attributes: { exclude: ['passwordHash', 'password_hash'] } }
+        ]
       },
-      { model: Patient, as: 'patient' },
+      {
+        model: Patient,
+        as: 'patient',
+        include: [{ model: User, as: 'user', attributes: { exclude: ['passwordHash', 'password_hash'] } }]
+      },
       { model: PrescriptionItem, as: 'items' }
     ],
     transaction
@@ -28,9 +35,16 @@ const findDoctorPrescription = async (doctorId, prescriptionId, transaction) => 
       {
         model: Doctor,
         as: 'doctor',
-        include: [{ model: Specialization, as: 'specialization' }]
+        include: [
+          { model: Specialization, as: 'specialization' },
+          { model: User, as: 'user', attributes: { exclude: ['passwordHash', 'password_hash'] } }
+        ]
       },
-      { model: Patient, as: 'patient' },
+      {
+        model: Patient,
+        as: 'patient',
+        include: [{ model: User, as: 'user', attributes: { exclude: ['passwordHash', 'password_hash'] } }]
+      },
       { model: PrescriptionItem, as: 'items' }
     ],
     transaction

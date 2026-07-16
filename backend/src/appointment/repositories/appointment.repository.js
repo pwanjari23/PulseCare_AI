@@ -10,11 +10,18 @@ const { Op } = require('sequelize');
 const findAppointmentById = async (id, transaction) => {
   return Appointment.findByPk(id, {
     include: [
-      { model: Patient, as: 'patient' },
+      {
+        model: Patient,
+        as: 'patient',
+        include: [{ model: User, as: 'user', attributes: { exclude: ['passwordHash', 'password_hash'] } }]
+      },
       {
         model: Doctor,
         as: 'doctor',
-        include: [{ model: Specialization, as: 'specialization' }]
+        include: [
+          { model: Specialization, as: 'specialization' },
+          { model: User, as: 'user', attributes: { exclude: ['passwordHash', 'password_hash'] } }
+        ]
       }
     ],
     transaction
@@ -89,6 +96,7 @@ const checkDoctorAvailability = async (doctorId, transaction) => {
     include: [{
       model: User,
       as: 'user',
+      attributes: { exclude: ['passwordHash', 'password_hash'] },
       where: { status: 'Active' }
     }],
     transaction

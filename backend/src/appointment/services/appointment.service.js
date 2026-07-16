@@ -12,6 +12,7 @@ const {
 } = require('#constants/activity.constants.js');
 const { ApiError } = require('#utils/apiResponse.js');
 const logger = require('#config/logger.js');
+const emailService = require('../../email/config/email');
 
 /**
  * Patient books a new appointment.
@@ -117,6 +118,35 @@ const bookAppointment = async (patientUserId, data, metadata = {}) => {
     transactionFinished = true;
 
     const completeApp = await appointmentRepository.findAppointmentById(appRecord.id);
+
+    // Send emails (non-blocking)
+    if (completeApp) {
+      const patientName = `${completeApp.patient.firstName} ${completeApp.patient.lastName}`;
+      const doctorName = `Dr. ${completeApp.doctor.firstName} ${completeApp.doctor.lastName}`;
+      const time = new Date(completeApp.appointmentAt).toLocaleString();
+
+      if (completeApp.patient.user && completeApp.patient.user.email) {
+        emailService.sendAppointmentBookedEmail(completeApp.patient.user.email, {
+          recipientName: patientName,
+          otherPartyName: doctorName,
+          dateTime: time,
+          reason: completeApp.reason
+        }).catch((err) => {
+          logger.error(`[AppointmentService] Non-blocking patient booking email failed: ${err.message}`);
+        });
+      }
+      if (completeApp.doctor.user && completeApp.doctor.user.email) {
+        emailService.sendAppointmentBookedEmail(completeApp.doctor.user.email, {
+          recipientName: doctorName,
+          otherPartyName: patientName,
+          dateTime: time,
+          reason: completeApp.reason
+        }).catch((err) => {
+          logger.error(`[AppointmentService] Non-blocking doctor booking email failed: ${err.message}`);
+        });
+      }
+    }
+
     return toAppointmentDto(completeApp);
   } catch (error) {
     if (!transactionFinished) {
@@ -192,6 +222,35 @@ const cancelAppointment = async (userId, userRole, appointmentId, metadata = {})
     transactionFinished = true;
 
     const refreshed = await appointmentRepository.findAppointmentById(appointmentId);
+
+    // Send emails (non-blocking)
+    if (refreshed) {
+      const patientName = `${refreshed.patient.firstName} ${refreshed.patient.lastName}`;
+      const doctorName = `Dr. ${refreshed.doctor.firstName} ${refreshed.doctor.lastName}`;
+      const time = new Date(refreshed.appointmentAt).toLocaleString();
+
+      if (refreshed.patient.user && refreshed.patient.user.email) {
+        emailService.sendAppointmentCancelledEmail(refreshed.patient.user.email, {
+          recipientName: patientName,
+          otherPartyName: doctorName,
+          dateTime: time,
+          cancelledBy: userRole
+        }).catch((err) => {
+          logger.error(`[AppointmentService] Non-blocking patient cancel email failed: ${err.message}`);
+        });
+      }
+      if (refreshed.doctor.user && refreshed.doctor.user.email) {
+        emailService.sendAppointmentCancelledEmail(refreshed.doctor.user.email, {
+          recipientName: doctorName,
+          otherPartyName: patientName,
+          dateTime: time,
+          cancelledBy: userRole
+        }).catch((err) => {
+          logger.error(`[AppointmentService] Non-blocking doctor cancel email failed: ${err.message}`);
+        });
+      }
+    }
+
     return toAppointmentDto(refreshed);
   } catch (error) {
     if (!transactionFinished) {
@@ -263,6 +322,33 @@ const completeAppointment = async (doctorUserId, appointmentId, notes, metadata 
     transactionFinished = true;
 
     const refreshed = await appointmentRepository.findAppointmentById(appointmentId);
+
+    // Send emails (non-blocking)
+    if (refreshed) {
+      const patientName = `${refreshed.patient.firstName} ${refreshed.patient.lastName}`;
+      const doctorName = `Dr. ${refreshed.doctor.firstName} ${refreshed.doctor.lastName}`;
+      const time = new Date(refreshed.appointmentAt).toLocaleString();
+
+      if (refreshed.patient.user && refreshed.patient.user.email) {
+        emailService.sendAppointmentCompletedEmail(refreshed.patient.user.email, {
+          recipientName: patientName,
+          otherPartyName: doctorName,
+          dateTime: time
+        }).catch((err) => {
+          logger.error(`[AppointmentService] Non-blocking patient complete email failed: ${err.message}`);
+        });
+      }
+      if (refreshed.doctor.user && refreshed.doctor.user.email) {
+        emailService.sendAppointmentCompletedEmail(refreshed.doctor.user.email, {
+          recipientName: doctorName,
+          otherPartyName: patientName,
+          dateTime: time
+        }).catch((err) => {
+          logger.error(`[AppointmentService] Non-blocking doctor complete email failed: ${err.message}`);
+        });
+      }
+    }
+
     return toAppointmentDto(refreshed);
   } catch (error) {
     if (!transactionFinished) {

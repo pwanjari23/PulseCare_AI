@@ -1,0 +1,13 @@
+/**
+ * PulseCare AI – Password Reset Constants
+ */
+
+const RESET_TOKEN_BYTES = 32;
+const RESET_TOKEN_EXPIRY_MINUTES = 15;
+const MAX_RESET_REQUESTS_PER_HOUR = 5;
+
+module.exports = {
+  RESET_TOKEN_BYTES,
+  RESET_TOKEN_EXPIRY_MINUTES,
+  MAX_RESET_REQUESTS_PER_HOUR,
+};

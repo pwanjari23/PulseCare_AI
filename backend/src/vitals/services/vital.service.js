@@ -13,6 +13,8 @@ const {
 } = require('#constants/activity.constants.js');
 const { ApiError } = require('#utils/apiResponse.js');
 const logger = require('#config/logger.js');
+const emailService = require('../../email/config/email');
+const doctorRepository = require('../../doctor/repositories/doctor.repository');
 
 /**
  * Checks if a vital reading is outside healthy ranges.
@@ -193,6 +195,45 @@ const recordVital = async (patientUserId, data, metadata = {}) => {
 
     await transaction.commit();
     transactionFinished = true;
+
+    // Send email alert notifications (non-blocking)
+    if (alertGenerated) {
+      try {
+        const patientName = `${patient.firstName} ${patient.lastName}`;
+        const vitalsData = {
+          heartRate: data.heartRate,
+          spo2: data.spo2,
+          temperature: data.temperature,
+          systolicBp: data.systolicBp,
+          diastolicBp: data.diastolicBp,
+          glucose: data.glucose
+        };
+
+        if (patient.user && patient.user.email) {
+          emailService.sendVitalAlertEmail(patient.user.email, {
+            patientName,
+            vitals: vitalsData
+          }).catch((err) => {
+            logger.error(`[VitalsService] Non-blocking patient vital alert email failed: ${err.message}`);
+          });
+        }
+
+        const doctorId = await findDoctorForAlert(patient, null);
+        if (doctorId) {
+          const doctor = await doctorRepository.findDoctorByUserId(doctorId);
+          if (doctor && doctor.user && doctor.user.email) {
+            emailService.sendVitalAlertEmail(doctor.user.email, {
+              patientName,
+              vitals: vitalsData
+            }).catch((err) => {
+              logger.error(`[VitalsService] Non-blocking doctor vital alert email failed: ${err.message}`);
+            });
+          }
+        }
+      } catch (emailErr) {
+        logger.error(`[VitalsService] Failed to send vital alert email notifications: ${emailErr.message}`);
+      }
+    }
 
     const completeRecord = await vitalRepository.findVitalById(log.id);
     return toVitalDto(completeRecord, alertGenerated, height);

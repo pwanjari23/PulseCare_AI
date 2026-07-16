@@ -17,7 +17,7 @@ const {
 const findPatient = async (patientId, transaction) => {
   return Patient.findOne({
     where: { id: patientId },
-    include: [{ model: User, as: 'user' }],
+    include: [{ model: User, as: 'user', attributes: { exclude: ['passwordHash', 'password_hash'] } }],
     transaction
   });
 };

@@ -13,7 +13,8 @@ const findDoctorByUserId = async (userId, transaction) => {
     include: [
       {
         model: User,
-        as: 'user'
+        as: 'user',
+        attributes: { exclude: ['passwordHash', 'password_hash'] }
       },
       {
         model: Specialization,
@@ -50,7 +51,8 @@ const findDoctorWithSpecialization = async (id, transaction) => {
       },
       {
         model: User,
-        as: 'user'
+        as: 'user',
+        attributes: { exclude: ['passwordHash', 'password_hash'] }
       }
     ],
     transaction
