@@ -1,11 +1,8 @@
-/**
- * PulseCare AI - Shared Frontend Constants
- * Exposes UI routes paths and static configurations.
- */
-
-export const ROUTES = {
-  HOME: '/',
-  LOGIN: '/login',
-  REGISTER: '/register',
-  DASHBOARD: '/dashboard',
-};
+export { ROLES } from './roles';
+export { ROUTES } from './routes';
+export { API_ENDPOINTS } from './api';
+export { MESSAGES } from './messages';
+export { STORAGE_KEYS } from './storage';
+export { QUERY_KEYS } from './queryKeys';
+export { PERMISSIONS } from './permissions';
+export * from './theme';

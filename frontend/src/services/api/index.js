@@ -1,0 +1,12 @@
+export { default as axiosInstance } from './axios';
+export { default as authApi } from './auth.api';
+export { default as doctorApi } from './doctor.api';
+export { default as patientApi } from './patient.api';
+export { default as appointmentApi } from './appointment.api';
+export { default as vitalApi } from './vital.api';
+export { default as notificationApi } from './notification.api';
+export { default as dashboardApi } from './dashboard.api';
+export { default as uploadApi } from './upload.api';
+export { default as availabilityApi } from './availability.api';
+export { default as prescriptionApi } from './prescription.api';
+export { default as doctorNoteApi } from './doctorNote.api';

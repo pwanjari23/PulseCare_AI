@@ -1,0 +1,210 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+
+:root {
+  /* Colors */
+  --primary-500: #3b82f6;
+  --primary-600: #2563eb;
+  --primary-700: #1d4ed8;
+
+  --secondary-500: #14b8a6;
+  --secondary-600: #0d9488;
+
+  --success-600: #16a34a;
+  --warning-500: #f59e0b;
+  --danger-600: #dc2626;
+  --info-500: #0ea5e9;
+
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+
+  /* Semantic - Light Mode */
+  --bg-page: #f9fafb;
+  --bg-card: #ffffff;
+  --bg-sidebar: #f9fafb;
+  --bg-navbar: #ffffff;
+
+  --border-light: #e5e7eb;
+  --border-medium: #d1d5db;
+
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --text-disabled: #9ca3af;
+}
+
+:root.dark {
+  /* Semantic - Dark Mode */
+  --bg-page: #0b0f19;
+  --bg-card: #151e2e;
+  --bg-sidebar: #0b0f19;
+  --bg-navbar: #151e2e;
+
+  --border-light: #1e293b;
+  --border-medium: #374151;
+
+  --text-primary: #f9fafb;
+  --text-secondary: #cbd5e1;
+  --text-muted: #9ca3af;
+  --text-disabled: #4b5563;
+}
+
+@theme {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Color System */
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+
+  --color-secondary-500: var(--secondary-500);
+  --color-secondary-600: var(--secondary-600);
+
+  --color-success-600: var(--success-600);
+  --color-warning-500: var(--warning-500);
+  --color-danger-600: var(--danger-600);
+  --color-info-500: var(--info-500);
+
+  /* Medical Theme Aliases */
+  --color-medical-500: var(--primary-500);
+  --color-medical-600: var(--primary-600);
+  --color-medical-700: var(--primary-700);
+
+  --color-healing-500: var(--secondary-500);
+  --color-healing-600: var(--secondary-600);
+
+  --color-ai-500: var(--info-500);
+
+  --color-gray-50: var(--gray-50);
+  --color-gray-100: var(--gray-100);
+  --color-gray-200: var(--gray-200);
+  --color-gray-300: var(--gray-300);
+  --color-gray-400: var(--gray-400);
+  --color-gray-500: var(--gray-500);
+  --color-gray-600: var(--gray-600);
+  --color-gray-700: var(--gray-700);
+  --color-gray-800: var(--gray-800);
+  --color-gray-900: var(--gray-900);
+
+  /* Backgrounds */
+  --color-bg-page: var(--bg-page);
+  --color-bg-card: var(--bg-card);
+  --color-bg-sidebar: var(--bg-sidebar);
+  --color-bg-navbar: var(--bg-navbar);
+
+  --color-bg: var(--bg-page);
+  --color-surface: var(--bg-card);
+
+  /* Borders */
+  --color-border-light: var(--border-light);
+  --color-border-medium: var(--border-medium);
+  --color-border-subtle: var(--border-light);
+
+  /* Text */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-disabled: var(--text-disabled);
+
+  --color-primary-text: var(--text-primary);
+  --color-secondary-text: var(--text-secondary);
+  --color-muted-text: var(--text-muted);
+
+  /* Alert Colors mapping for old color names */
+  --color-danger-500: var(--danger-600);
+  --color-success-500: var(--success-600);
+
+  /* Typography Font Sizes */
+  --font-size-display: 2.5rem;
+  --font-size-h1: 2rem;
+  --font-size-h2: 1.5rem;
+  --font-size-h3: 1.25rem;
+  --font-size-h4: 1.125rem;
+  --font-size-body-large: 1.125rem;
+  --font-size-body-medium: 1rem;
+  --font-size-body-small: 0.875rem;
+  --font-size-caption: 0.75rem;
+  --font-size-label: 0.875rem;
+  --font-size-btn: 0.875rem;
+
+  /* Border Radius */
+  --radius-xs: 0.125rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* Motion (Durations) */
+  --animate-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --animate-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --animate-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html,
+body,
+#root {
+  min-height: 100vh;
+  background-color: var(--color-bg-page);
+  color: var(--color-text-primary);
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+}
+
+/* Glassmorphism overlays */
+.glass-panel {
+  background: rgba(17, 26, 51, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(30, 41, 75, 0.5);
+}
+
+.glass-card {
+  background: rgba(17, 26, 51, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-page);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-light);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-600);
+}

@@ -1,7 +1,3 @@
-/**
- * PulseCare AI - Network Services Entry
- * Exposes API request modules using the axios client.
- */
-
-// Example: export { default as authService } from './auth.service';
-export {};
+export * from './socket/socket';
+export { SOCKET_EVENTS } from './socket/socketEvents';
+export * from './api';

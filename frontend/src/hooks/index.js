@@ -1,7 +1,10 @@
-/**
- * PulseCare AI - Custom React Hooks Entry
- * Exposes reusable layout hooks.
- */
-
-// Example: export { default as useSocket } from './useSocket';
-export {};
+export { default as useAuth } from './useAuth';
+export { default as useApi } from './useApi';
+export { default as useTheme } from './useTheme';
+export { default as useNotification } from './useNotification';
+export { default as usePagination } from './usePagination';
+export { default as useModal } from './useModal';
+export { default as useDebounce } from './useDebounce';
+export { default as useLocalStorage } from './useLocalStorage';
+export { default as useOutsideClick } from './useOutsideClick';
+export { default as usePrevious } from './usePrevious';
