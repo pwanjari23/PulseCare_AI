@@ -2,10 +2,12 @@ export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: '/auth/login',
     LOGOUT: '/auth/logout',
-    ME: '/auth/me',
+    ME: '/profile',
     REFRESH: '/auth/refresh',
-    FORGOT_PASSWORD: '/auth/forgot-password',
-    RESET_PASSWORD: '/auth/reset-password',
+    REGISTER_PATIENT: '/auth/register/patient',
+    REGISTER_DOCTOR: '/auth/register/doctor',
+    FORGOT_PASSWORD: '/password-reset/forgot',
+    RESET_PASSWORD: '/password-reset/reset',
   },
   DOCTOR: {
     PROFILE: '/doctors/profile',

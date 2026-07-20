@@ -5,34 +5,34 @@ export const authApi = {
   login: (credentials) => {
     return axiosInstance.post(API_ENDPOINTS.AUTH.LOGIN, credentials);
   },
-  
+
   registerPatient: (data) => {
-    return axiosInstance.post('/auth/register/patient', data);
+    return axiosInstance.post(API_ENDPOINTS.AUTH.REGISTER_PATIENT, data);
   },
-  
+
   registerDoctor: (data) => {
-    return axiosInstance.post('/auth/register/doctor', data);
+    return axiosInstance.post(API_ENDPOINTS.AUTH.REGISTER_DOCTOR, data);
   },
-  
-  refreshToken: (token) => {
-    return axiosInstance.post(API_ENDPOINTS.AUTH.REFRESH, { refreshToken: token });
+
+  refreshToken: (refreshToken) => {
+    return axiosInstance.post(API_ENDPOINTS.AUTH.REFRESH, { refreshToken });
   },
-  
-  logout: (token) => {
-    return axiosInstance.post(API_ENDPOINTS.AUTH.LOGOUT, { refreshToken: token });
+
+  logout: (refreshToken) => {
+    return axiosInstance.post(API_ENDPOINTS.AUTH.LOGOUT, { refreshToken });
   },
-  
+
   getProfile: () => {
-    return axiosInstance.get('/profile');
+    return axiosInstance.get(API_ENDPOINTS.AUTH.ME);
   },
 
   forgotPassword: (email) => {
     return axiosInstance.post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, { email });
   },
 
-  resetPassword: (token, password) => {
-    return axiosInstance.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, { token, password });
-  }
+  resetPassword: ({ token, newPassword, confirmPassword }) => {
+    return axiosInstance.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, { token, newPassword, confirmPassword });
+  },
 };
 
 export default authApi;

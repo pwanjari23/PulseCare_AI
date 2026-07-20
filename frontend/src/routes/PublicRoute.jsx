@@ -5,13 +5,23 @@ import AppLoader from '../components/system/AppLoader';
 import { ROUTES } from '../constants/routes';
 
 export const PublicRoute = () => {
-  const { isAuthenticated, initialized } = useAuthStore();
+  const { isAuthenticated, initialized, user } = useAuthStore();
 
   if (!initialized) {
     return <AppLoader />;
   }
 
   if (isAuthenticated) {
+    const role = user?.role?.toLowerCase() || '';
+    if (role === 'patient') {
+      return <Navigate to={ROUTES.PATIENT.DASHBOARD} replace />;
+    }
+    if (role === 'doctor') {
+      return <Navigate to={ROUTES.DOCTOR.DASHBOARD} replace />;
+    }
+    if (role === 'admin') {
+      return <Navigate to={ROUTES.ADMIN.DASHBOARD} replace />;
+    }
     return <Navigate to={ROUTES.DASHBOARD} replace />;
   }
 

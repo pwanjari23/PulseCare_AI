@@ -23,7 +23,7 @@ export const useAuthStore = create((set, get) => ({
     });
   },
 
-  logout: async () => {
+  logout: async (queryClient) => {
     set({ loading: true });
     try {
       const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
@@ -33,6 +33,9 @@ export const useAuthStore = create((set, get) => ({
     } catch (e) {
       console.error('Logout error on server:', e);
     } finally {
+      if (queryClient && typeof queryClient.clear === 'function') {
+        queryClient.clear();
+      }
       get().clearAuth();
     }
   },
@@ -59,6 +62,46 @@ export const useAuthStore = create((set, get) => ({
     }));
   },
 
+  fetchProfile: async () => {
+    try {
+      const profileData = await authApi.getProfile();
+      const user = profileData?.user || profileData;
+      set({ user });
+      return user;
+    } catch (error) {
+      console.error('Failed to fetch profile:', error);
+      throw error;
+    }
+  },
+
+  refreshSession: async () => {
+    const refreshToken = localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN);
+    if (!refreshToken) throw new Error('No refresh token available');
+
+    set({ refreshingToken: true });
+    try {
+      const refreshResult = await authApi.refreshToken(refreshToken);
+      const { accessToken: newAccessToken, refreshToken: newRefreshToken, user: initialUser } = refreshResult;
+
+      set({ accessToken: newAccessToken, isAuthenticated: true });
+      if (newRefreshToken) {
+        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, newRefreshToken);
+      }
+
+      let user = initialUser;
+      if (!user) {
+        const profileRes = await authApi.getProfile();
+        user = profileRes?.user || profileRes;
+      }
+      set({ user, refreshingToken: false });
+      return user;
+    } catch (error) {
+      set({ refreshingToken: false });
+      get().clearAuth();
+      throw error;
+    }
+  },
+
   restoreSession: async () => {
     if (get().initialized) return;
 
@@ -70,7 +113,6 @@ export const useAuthStore = create((set, get) => ({
 
     set({ loading: true, error: null });
     try {
-      // First, get a new access token
       const refreshResult = await authApi.refreshToken(refreshToken);
       const { accessToken: newAccessToken, refreshToken: newRefreshToken, user: initialUser } = refreshResult;
 
@@ -79,10 +121,10 @@ export const useAuthStore = create((set, get) => ({
         localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, newRefreshToken);
       }
 
-      // If user was returned in refresh, use it. Otherwise, fetch profile.
       let user = initialUser;
       if (!user) {
-        user = await authApi.getProfile();
+        const profileRes = await authApi.getProfile();
+        user = profileRes?.user || profileRes;
       }
 
       set({

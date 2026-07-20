@@ -1,0 +1,9 @@
+export { PatientDashboard } from './PatientDashboard';
+export { DashboardHeader } from './DashboardHeader';
+export { HealthSummaryCard } from './HealthSummaryCard';
+export { HealthTrendChart } from './HealthTrendChart';
+export { UpcomingAppointmentsCard } from './UpcomingAppointmentsCard';
+export { RecentVitalsCard } from './RecentVitalsCard';
+export { PrescriptionCard } from './PrescriptionCard';
+export { QuickActions } from './QuickActions';
+export { EmptyDashboard } from './EmptyDashboard';
