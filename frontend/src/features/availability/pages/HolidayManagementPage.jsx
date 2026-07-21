@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, PalmTree, Plus, Trash2, CalendarX, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Palmtree, Plus, Trash2, CalendarX, RefreshCw } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -66,7 +66,7 @@ export const HolidayManagementPage = () => {
           </Link>
           <div>
             <h1 className="text-2xl font-extrabold text-foreground font-display flex items-center space-x-2">
-              <PalmTree className="w-6 h-6 text-rose-500" />
+              <Palmtree className="w-6 h-6 text-rose-500" />
               <span>Holiday Management</span>
             </h1>
             <p className="text-xs text-muted-foreground">Mark days off, public holidays, and annual leave.</p>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CalendarDays, Calendar, Eye, PalmTree, RefreshCw } from 'lucide-react';
+import { CalendarDays, Calendar, Eye, Palmtree, RefreshCw } from 'lucide-react';
 import { useAvailability } from '../hooks/useAvailability';
 import { useDeleteAvailability } from '../hooks/useDeleteAvailability';
 import axiosInstance from '../../../services/api/axios';
@@ -18,7 +18,7 @@ import DeleteAvailabilityDialog from '../components/DeleteAvailabilityDialog';
 
 const QUICK_LINKS = [
   { to: '/doctor/availability/schedule', icon: CalendarDays, label: 'Weekly Schedule', desc: 'Manage detailed working hours' },
-  { to: '/doctor/availability/holidays', icon: PalmTree, label: 'Holidays', desc: 'Add days off and public holidays' },
+  { to: '/doctor/availability/holidays', icon: Palmtree, label: 'Holidays', desc: 'Add days off and public holidays' },
   { to: '/doctor/availability/preview', icon: Eye, label: 'Slot Preview', desc: 'See what patients will see' },
 ];
 

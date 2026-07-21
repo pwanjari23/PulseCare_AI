@@ -59,6 +59,7 @@ export const NAVIGATION_CONFIG = {
       items: [
         { id: 'doctor-prescriptions', label: 'Prescriptions', route: '/doctor/prescriptions', icon: FileText },
         { id: 'doctor-notes', label: 'Doctor Notes', route: '/doctor/notes', icon: ClipboardList },
+        { id: 'doctor-ai-summary', label: 'AI Health Summary', route: '/health-summary', icon: BrainCircuit },
         { id: 'doctor-vital-alerts', label: 'Vital Alerts', route: '/doctor/vital-alerts', icon: AlertTriangle, badge: 'Live' },
       ],
     },

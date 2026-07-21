@@ -1,4 +1,1 @@
-/**
- * PulseCare AI - Placeholder Index
- */
-export {};
+export * from '../prescriptions';
