@@ -5,6 +5,32 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import { PatientDashboard, DoctorDashboard } from '../pages/dashboard';
 import { AdminDashboard } from '../features/admin-dashboard';
 import {
+  UsersPage,
+  DoctorsPage as AdminDoctorsPage,
+  PatientsPage as AdminPatientsPage,
+  AdminsPage,
+  UserProfilePage,
+} from '../features/user-management';
+import {
+  ReportsDashboard,
+  UserReports,
+  AppointmentReports,
+  DoctorReports,
+  PatientReports,
+  PrescriptionReports,
+  HealthSummaryReports,
+  ActivityReports,
+} from '../features/reports';
+import {
+  ProfilePage,
+  AccountSettings,
+  SecuritySettings,
+  NotificationSettings,
+  AppearanceSettings,
+  ApplicationSettings,
+  AuditLogsPage,
+} from '../features/settings';
+import {
   AppointmentsPage,
   AppointmentDetailsPage,
   BookAppointmentPage,
@@ -174,6 +200,30 @@ export const DashboardRoutes = (
       <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
         <Route path={ROUTES.ADMIN.DASHBOARD} element={<AdminDashboard />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/users" element={<UsersPage />} />
+        <Route path="/admin/doctors" element={<AdminDoctorsPage />} />
+        <Route path="/admin/patients" element={<AdminPatientsPage />} />
+        <Route path="/admin/admins" element={<AdminsPage />} />
+        <Route path="/admin/users/:id" element={<UserProfilePage />} />
+        <Route path="/admin/reports" element={<ReportsDashboard />} />
+        <Route path="/admin/reports/users" element={<UserReports />} />
+        <Route path="/admin/reports/appointments" element={<AppointmentReports />} />
+        <Route path="/admin/reports/doctors" element={<DoctorReports />} />
+        <Route path="/admin/reports/patients" element={<PatientReports />} />
+        <Route path="/admin/reports/prescriptions" element={<PrescriptionReports />} />
+        <Route path="/admin/reports/health-summary" element={<HealthSummaryReports />} />
+        <Route path="/admin/reports/activity" element={<ActivityReports />} />
+        <Route path="/settings/audit-logs" element={<AuditLogsPage />} />
+      </Route>
+
+      {/* General Settings Routes for All Authenticated Roles */}
+      <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.DOCTOR, ROLES.PATIENT]} />}>
+        <Route path="/settings/profile" element={<ProfilePage />} />
+        <Route path="/settings/account" element={<AccountSettings />} />
+        <Route path="/settings/security" element={<SecuritySettings />} />
+        <Route path="/settings/notifications" element={<NotificationSettings />} />
+        <Route path="/settings/appearance" element={<AppearanceSettings />} />
+        <Route path="/settings/application" element={<ApplicationSettings />} />
       </Route>
     </Route>
   </Route>

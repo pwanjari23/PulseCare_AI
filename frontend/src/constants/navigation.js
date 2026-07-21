@@ -77,8 +77,10 @@ export const NAVIGATION_CONFIG = {
       group: 'Administration',
       items: [
         { id: 'admin-dashboard', label: 'Admin Hub', route: ROUTES.ADMIN.DASHBOARD, icon: LayoutDashboard },
+        { id: 'admin-users', label: 'User Directory', route: '/admin/users', icon: Users },
         { id: 'admin-doctors', label: 'Doctors', route: '/admin/doctors', icon: Stethoscope },
         { id: 'admin-patients', label: 'Patients', route: '/admin/patients', icon: Users },
+        { id: 'admin-admins', label: 'Administrators', route: '/admin/admins', icon: ShieldCheck },
       ],
     },
     {
@@ -92,7 +94,7 @@ export const NAVIGATION_CONFIG = {
       group: 'System',
       items: [
         { id: 'admin-notifications', label: 'Notifications', route: '/notifications', icon: Bell },
-        { id: 'admin-settings', label: 'System Settings', route: '/admin/settings', icon: Settings },
+        { id: 'admin-settings', label: 'System Settings', route: '/settings/profile', icon: Settings },
       ],
     },
   ],

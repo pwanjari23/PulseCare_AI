@@ -8,9 +8,11 @@ import PublicLayout from '../layouts/PublicLayout';
 import Home from '../pages/Home';
 import DesignSystem from '../pages/DesignSystem';
 
-// System Components
-import NotFound from '../components/system/NotFound';
-import Unauthorized from '../components/system/Unauthorized';
+import NotFoundPage from '../pages/error/NotFoundPage';
+import ForbiddenPage from '../pages/error/ForbiddenPage';
+import ServerErrorPage from '../pages/error/ServerErrorPage';
+import OfflinePage from '../pages/error/OfflinePage';
+import SessionExpiredPage from '../pages/error/SessionExpiredPage';
 
 // Modular Routes
 import AuthRoutes from './AuthRoutes';
@@ -22,7 +24,11 @@ const AppRoutes = () => {
       {/* Public Routes */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route path="/unauthorized" element={<ForbiddenPage />} />
+        <Route path="/403" element={<ForbiddenPage />} />
+        <Route path="/500" element={<ServerErrorPage />} />
+        <Route path="/offline" element={<OfflinePage />} />
+        <Route path="/session-expired" element={<SessionExpiredPage />} />
       </Route>
 
       {/* Modularized Auth Routes */}
@@ -35,7 +41,8 @@ const AppRoutes = () => {
       <Route path="/design-system" element={<DesignSystem />} />
 
       {/* 404 Catch All */}
-      <Route path="*" element={<NotFound />} />
+      <Route path="/404" element={<NotFoundPage />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };
