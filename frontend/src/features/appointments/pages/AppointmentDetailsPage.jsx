@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, Clock, Stethoscope, MapPin, DollarSign, FileText, X } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Stethoscope, MapPin, DollarSign, FileText, X, Video } from 'lucide-react';
 import { useAuthStore } from '../../../stores/auth.store';
 import { useAppointment } from '../hooks/useAppointment';
 import { useUpdateAppointment } from '../hooks/useUpdateAppointment';
@@ -66,6 +66,15 @@ export const AppointmentDetailsPage = () => {
           </div>
 
           <div className="flex items-center space-x-2 self-start">
+            {appt.type === 'Video Consultation' && ['Confirmed', 'Scheduled', 'Completed'].includes(appt.status) && (
+              <button
+                onClick={() => navigate(`/appointments/${appt.id}/video`)}
+                className="px-3 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary/95 transition-colors flex items-center space-x-1.5"
+              >
+                <Video className="w-3.5 h-3.5" />
+                <span>Join Telehealth Call</span>
+              </button>
+            )}
             {canCancel && (
               <button
                 onClick={() => setShowCancel(true)}

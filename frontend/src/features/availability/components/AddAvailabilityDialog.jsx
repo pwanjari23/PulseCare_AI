@@ -24,14 +24,31 @@ const schema = z.object({
 export const AddAvailabilityDialog = ({ isOpen, onClose }) => {
   const createMutation = useCreateAvailability();
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm({
+  const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
-    defaultValues: { dayOfWeek: '', startTime: '09:00', endTime: '17:00' },
+    defaultValues: { dayOfWeek: 'Monday', startTime: '09:00', endTime: '17:00' },
   });
 
+  const selectedDay = watch('dayOfWeek');
+
+  React.useEffect(() => {
+    if (isOpen) {
+      reset({ dayOfWeek: 'Monday', startTime: '09:00', endTime: '17:00' });
+    }
+  }, [isOpen, reset]);
+
   const onSubmit = (data) => {
-    createMutation.mutate(data, {
-      onSuccess: () => { reset(); onClose(); },
+    const payload = {
+      dayOfWeek: data.dayOfWeek,
+      startTime: data.startTime.length === 4 ? `0${data.startTime}` : data.startTime,
+      endTime: data.endTime.length === 4 ? `0${data.endTime}` : data.endTime,
+    };
+
+    createMutation.mutate(payload, {
+      onSuccess: () => {
+        reset({ dayOfWeek: 'Monday', startTime: '09:00', endTime: '17:00' });
+        onClose();
+      },
     });
   };
 
@@ -64,19 +81,28 @@ export const AddAvailabilityDialog = ({ isOpen, onClose }) => {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              {/* Hidden registered input for React Hook Form + Zod */}
+              <input type="hidden" {...register('dayOfWeek')} />
+
               {/* Day selector */}
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <label className="block text-xs font-semibold text-foreground">
                   Day of Week <span className="text-rose-500">*</span>
                 </label>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {WEEK_DAYS.map((day) => (
-                    <label key={day} className="cursor-pointer">
-                      <input type="radio" value={day} {...register('dayOfWeek')} className="sr-only peer" />
-                      <span className="px-3 py-1.5 rounded-xl text-xs font-semibold border border-border/60 text-muted-foreground peer-checked:bg-primary peer-checked:text-primary-foreground peer-checked:border-primary transition-all">
-                        {day.slice(0, 3)}
-                      </span>
-                    </label>
+                    <button
+                      type="button"
+                      key={day}
+                      onClick={() => setValue('dayOfWeek', day, { shouldValidate: true, shouldDirty: true, shouldTouch: true })}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                        selectedDay === day
+                          ? 'bg-primary text-primary-foreground border-primary shadow-xs font-bold'
+                          : 'bg-card text-muted-foreground border-border/60 hover:text-foreground hover:bg-accent/40'
+                      }`}
+                    >
+                      {day.slice(0, 3)}
+                    </button>
                   ))}
                 </div>
                 {errors.dayOfWeek && <p className="text-[11px] text-rose-500">{errors.dayOfWeek.message}</p>}

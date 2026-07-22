@@ -43,8 +43,23 @@ const getAdminDashboard = async (req, res, next) => {
   }
 };
 
+/**
+ * GET /dashboard/recent-activity — Fetch recent platform activity log.
+ */
+const getRecentActivity = async (req, res, next) => {
+  try {
+    const list = await dashboardService.getRecentActivity();
+    return res.status(200).json(
+      new ApiResponse(200, list, 'Recent platform activity retrieved successfully.')
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   getPatientDashboard,
   getDoctorDashboard,
-  getAdminDashboard
+  getAdminDashboard,
+  getRecentActivity
 };

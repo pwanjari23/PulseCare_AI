@@ -302,11 +302,37 @@ const rejectDoctor = async (doctorId, reason, adminUserId = null, metadata = {})
   }
 };
 
+/**
+ * Retrieves all doctors list.
+ */
+const getDoctors = async () => {
+  const doctors = await doctorRepository.findAllDoctors();
+  return doctors.map(d => {
+    return {
+      id: Number(d.id),
+      userId: d.user ? Number(d.user.id) : Number(d.id),
+      firstName: d.firstName,
+      lastName: d.lastName,
+      email: d.user ? d.user.email : null,
+      phone: d.user ? d.user.phone : null,
+      status: d.user ? d.user.status : 'Active',
+      role: 'Doctor',
+      specialization: d.specialization ? d.specialization.name : 'General Practice',
+      isVerified: d.isVerified,
+      rating: 4.8,
+      experienceYears: d.experienceYears || 0,
+      createdAt: d.createdAt,
+      lastLogin: d.user ? d.user.lastLoginAt : null
+    };
+  });
+};
+
 module.exports = {
   getDoctorProfile,
   updateDoctorProfile,
   getPublicDoctorProfile,
   getDoctorProfileForAdmin,
   approveDoctor,
-  rejectDoctor
+  rejectDoctor,
+  getDoctors
 };

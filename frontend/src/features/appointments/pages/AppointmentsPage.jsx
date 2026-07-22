@@ -33,9 +33,11 @@ export const AppointmentsPage = () => {
 
   const filteredAppointments = useMemo(() => {
     return appointmentsList.filter((appt) => {
+      const apptDate = appt.date || (appt.scheduledAt ? appt.scheduledAt.split('T')[0] : '');
+
       let filterMatch = true;
-      if (activeFilter === 'Today') filterMatch = appt.date === today;
-      else if (activeFilter === 'Upcoming') filterMatch = appt.date > today && !['Cancelled', 'Completed'].includes(appt.status);
+      if (activeFilter === 'Today') filterMatch = apptDate === today;
+      else if (activeFilter === 'Upcoming') filterMatch = (apptDate >= today || !apptDate) && !['Cancelled', 'Completed'].includes(appt.status);
       else if (activeFilter === 'Completed') filterMatch = appt.status === 'Completed';
       else if (activeFilter === 'Cancelled') filterMatch = appt.status === 'Cancelled';
 

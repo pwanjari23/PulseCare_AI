@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Activity, ChevronRight } from 'lucide-react';
+import { Activity, ChevronRight, Plus } from 'lucide-react';
 
 export const RecentVitalsCard = ({ vitals = [] }) => {
   const displayList = vitals.slice(0, 5);
@@ -12,13 +12,22 @@ export const RecentVitalsCard = ({ vitals = [] }) => {
           <Activity className="w-5 h-5 text-healing-500" />
           <h3 className="text-base font-bold text-foreground font-display">Recent Vitals Telemetry</h3>
         </div>
-        <Link
-          to="/vitals/history"
-          className="text-xs font-semibold text-primary hover:underline flex items-center space-x-1"
-        >
-          <span>View All</span>
-          <ChevronRight className="w-3.5 h-3.5" />
-        </Link>
+        <div className="flex items-center space-x-3">
+          <Link
+            to="/vitals/new"
+            className="px-3 py-1.5 bg-primary text-primary-foreground text-xs font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center space-x-1 shadow-xs"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Log Vitals</span>
+          </Link>
+          <Link
+            to="/vitals/history"
+            className="text-xs font-semibold text-primary hover:underline flex items-center space-x-1"
+          >
+            <span>View All</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
       </div>
 
       {displayList.length === 0 ? (

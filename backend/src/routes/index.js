@@ -47,6 +47,8 @@ router.use('/health-summary', require('../ai/routes/health-summary.routes'));
 router.use('/dashboard', require('../dashboard/routes/dashboard.routes'));
 router.use('/upload', require('../upload/routes/upload.routes'));
 router.use('/password-reset', require('../password-reset/routes/password-reset.routes'));
+router.use('/users', require('../user/routes/user.routes'));
+router.use('/admins', require('../admin/routes/admin.routes'));
 
 // Temporary protected verification routes for testing middleware
 const { authenticate, authorize } = require('../auth/middleware/auth.middleware');

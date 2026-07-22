@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Activity, Clock, BarChart2, ShieldCheck } from 'lucide-react';
+import { Activity, Plus } from 'lucide-react';
 import { useVitals } from '../hooks/useVitals';
 import VitalMetricCard from '../components/VitalMetricCard';
 import VitalTimeline from '../components/VitalTimeline';
@@ -12,6 +13,7 @@ import VitalComparison from '../components/VitalComparison';
 import { formatBP } from '../utils/vital.utils';
 
 export const PatientVitalsPage = () => {
+  const navigate = useNavigate();
   const { data: records = [], isLoading, error, refetch } = useVitals();
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'trends' | 'timeline' | 'reference'
 
@@ -28,12 +30,21 @@ export const PatientVitalsPage = () => {
             <span>My Health Vitals</span>
           </h1>
           <p className="text-xs text-muted-foreground mt-1">
-            Personal health metrics, historical trends, and reference guidelines.
+            Personal health metrics, historical trends, and self-log telemetry.
           </p>
         </motion.div>
 
-        {/* View Tabs */}
-        <div className="flex items-center space-x-1 bg-accent/50 p-1 rounded-2xl border border-border/60 self-start sm:self-center">
+        <div className="flex flex-wrap items-center gap-3 self-start sm:self-center">
+          <button
+            onClick={() => navigate('/vitals/new')}
+            className="px-4 py-2.5 bg-primary text-primary-foreground text-xs font-bold rounded-2xl hover:bg-primary/90 shadow-md shadow-primary/20 transition-all flex items-center space-x-1.5"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Log My Vitals</span>
+          </button>
+
+          {/* View Tabs */}
+          <div className="flex items-center space-x-1 bg-accent/50 p-1 rounded-2xl border border-border/60">
           <button
             onClick={() => setActiveTab('overview')}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
@@ -67,6 +78,7 @@ export const PatientVitalsPage = () => {
             Reference Ranges
           </button>
         </div>
+      </div>
       </div>
 
       {isLoading ? (

@@ -45,7 +45,7 @@ export class ErrorBoundary extends Component {
                 Clear Cache & Reset
               </Button>
             </div>
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <pre className="mt-6 p-4 bg-bg border border-border-subtle rounded-xl text-xs text-left overflow-auto max-h-40 w-full font-mono text-danger-600">
                 {this.state.error.toString()}
               </pre>

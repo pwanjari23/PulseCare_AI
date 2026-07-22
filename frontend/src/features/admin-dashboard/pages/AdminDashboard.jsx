@@ -6,14 +6,12 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useDashboard } from '../hooks/useDashboard';
 import { useRecentActivity } from '../hooks/useRecentActivity';
-import { useSystemHealth } from '../hooks/useSystemHealth';
 import DashboardHeader from '../components/DashboardHeader';
 import DashboardFilters from '../components/DashboardFilters';
 import StatisticsCards from '../components/StatisticsCards';
 import AnalyticsOverview from '../components/AnalyticsOverview';
 import QuickActions from '../components/QuickActions';
 import DashboardCharts from '../components/DashboardCharts';
-import SystemHealthCard from '../components/SystemHealthCard';
 import RecentActivity from '../components/RecentActivity';
 import UserStatistics from '../components/UserStatistics';
 import AppointmentStatistics from '../components/AppointmentStatistics';
@@ -37,7 +35,6 @@ export const AdminDashboard = () => {
   // React Query hooks
   const { data: dashboardData, isLoading, isError, refetch, isFetching } = useDashboard();
   const { data: activityData } = useRecentActivity();
-  const { data: systemHealthData } = useSystemHealth();
 
   const handleResetFilters = () => {
     setSearchTerm('');
@@ -102,11 +99,8 @@ export const AdminDashboard = () => {
       {/* Interactive Recharts Analytics */}
       <DashboardCharts />
 
-      {/* Grid: System Health & Real-Time Activity Log */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <SystemHealthCard healthData={systemHealthData || dashboardData?.systemStats} />
-        <RecentActivity activities={activityData} />
-      </div>
+      {/* Real-Time Activity Log */}
+      <RecentActivity activities={activityData} className="w-full" />
 
       {/* Domain Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -122,11 +116,11 @@ export const AdminDashboard = () => {
 
       {/* Tables & Upcoming Schedules Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <TopDoctorsTable />
-        <TopPatientsTable />
+        <TopDoctorsTable doctors={dashboardData?.topDoctors} />
+        <TopPatientsTable patients={dashboardData?.topPatients} />
       </div>
 
-      <UpcomingAppointments />
+      <UpcomingAppointments appointments={dashboardData?.upcomingAppointments} />
     </motion.div>
   );
 };

@@ -24,10 +24,28 @@ app.set('io', io);
 io.on('connection', (socket) => {
   logger.info(`Socket client connected: ${socket.id}`);
 
-  // Example real-time event
   socket.on('join_room', (roomId) => {
     socket.join(roomId);
+    socket.to(roomId).emit('user_joined', socket.id);
     logger.debug(`Socket ${socket.id} joined room ${roomId}`);
+  });
+
+  socket.on('offer', ({ roomId, offer }) => {
+    socket.to(roomId).emit('offer', { senderId: socket.id, offer });
+  });
+
+  socket.on('answer', ({ roomId, answer }) => {
+    socket.to(roomId).emit('answer', { senderId: socket.id, answer });
+  });
+
+  socket.on('ice_candidate', ({ roomId, candidate }) => {
+    socket.to(roomId).emit('ice_candidate', { senderId: socket.id, candidate });
+  });
+
+  socket.on('leave_room', (roomId) => {
+    socket.leave(roomId);
+    socket.to(roomId).emit('user_left', socket.id);
+    logger.debug(`Socket ${socket.id} left room ${roomId}`);
   });
 
   socket.on('disconnect', () => {

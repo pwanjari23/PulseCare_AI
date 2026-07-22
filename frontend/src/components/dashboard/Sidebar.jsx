@@ -81,17 +81,6 @@ export const Sidebar = ({ isCollapsed, onToggleCollapse }) => {
       {/* Footer Controls */}
       <div className="p-3 border-t border-border/50 space-y-1 bg-card">
         <button
-          onClick={() => setTheme(isDark ? 'light' : 'dark')}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-muted-foreground hover:bg-accent hover:text-foreground transition-colors ${
-            isCollapsed ? 'justify-center' : ''
-          }`}
-          title={isCollapsed ? (isDark ? 'Light Mode' : 'Dark Mode') : undefined}
-        >
-          {isDark ? <Sun className="w-4 h-4 text-amber-500 shrink-0" /> : <Moon className="w-4 h-4 text-indigo-500 shrink-0" />}
-          {!isCollapsed && <span>{isDark ? 'Light Mode' : 'Dark Mode'}</span>}
-        </button>
-
-        <button
           onClick={handleLogout}
           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-rose-500 hover:bg-rose-500/10 transition-colors ${
             isCollapsed ? 'justify-center' : ''

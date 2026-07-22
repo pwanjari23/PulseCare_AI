@@ -36,10 +36,8 @@ export { ReportEmptyState } from './components/ReportEmptyState';
 // API & Hooks
 export { reportsApi } from './api/reports.api';
 export { useReportsOverview } from './hooks/useReportsOverview';
-export { useUserReports } from './hooks/useUserReports';
+export { useUserReports, useUserReports as useDoctorReports, useUserReports as usePatientReports } from './hooks/useUserReports';
 export { useAppointmentReports } from './hooks/useAppointmentReports';
-export { useDoctorReports } from './hooks/useUserReports';
-export { usePatientReports } from './hooks/useUserReports';
 export { useHealthSummaryReports } from './hooks/useHealthSummaryReports';
 export { usePrescriptionReports } from './hooks/usePrescriptionReports';
 export { useActivityReports } from './hooks/useActivityReports';

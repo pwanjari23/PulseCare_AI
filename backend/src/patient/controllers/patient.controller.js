@@ -79,9 +79,24 @@ const getPatientForAdmin = async (req, res, next) => {
   }
 };
 
+/**
+ * Retrieves list of patients for Doctors and Admins.
+ */
+const getPatients = async (req, res, next) => {
+  try {
+    const list = await patientService.getPatients(req.user);
+    return res.status(200).json(
+      new ApiResponse(200, list, 'Patients retrieved successfully.')
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   getMyProfile,
   updateMyProfile,
   getPatientForDoctor,
-  getPatientForAdmin
+  getPatientForAdmin,
+  getPatients
 };

@@ -64,7 +64,7 @@ export const StatisticsCards = ({ data, className = '' }) => {
     {
       id: 'ai-summaries',
       label: 'AI Health Summaries',
-      value: data?.totalActivityLogsCount || 42,
+      value: data?.totalHealthSummariesCount || 0,
       change: '+24.5%',
       isPositive: true,
       icon: Sparkles,

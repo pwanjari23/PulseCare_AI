@@ -35,8 +35,8 @@ export const DAY_ABBR = {
 // Query cache stale time (ms)
 export const AVAILABILITY_STALE_TIME = 1000 * 60 * 5;
 
-// Time validation regex HH:mm
-export const TIME_REGEX = /^([01]\d|2[0-3]):([0-5]\d)$/;
+// Time validation regex HH:mm or H:mm or HH:mm:ss
+export const TIME_REGEX = /^([0-1]?\d|2[0-3]):([0-5]\d)(:([0-5]\d))?$/;
 
 // Min/max working block duration (minutes) – mirrors backend constants
 export const MIN_BLOCK_DURATION = 30;

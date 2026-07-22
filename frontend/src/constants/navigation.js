@@ -14,6 +14,7 @@ import {
   CheckSquare,
   BarChart3,
   Settings,
+  ShieldCheck,
 } from 'lucide-react';
 import { ROUTES } from './routes';
 
@@ -38,7 +39,6 @@ export const NAVIGATION_CONFIG = {
     {
       group: 'Preferences',
       items: [
-        { id: 'patient-notifications', label: 'Notifications', route: '/notifications', icon: Bell },
         { id: 'patient-profile', label: 'Profile', route: '/patient/profile', icon: User },
       ],
     },
@@ -66,7 +66,6 @@ export const NAVIGATION_CONFIG = {
     {
       group: 'Preferences',
       items: [
-        { id: 'doctor-notifications', label: 'Notifications', route: '/notifications', icon: Bell },
         { id: 'doctor-profile', label: 'Profile', route: '/doctor/profile', icon: User },
       ],
     },
@@ -93,7 +92,6 @@ export const NAVIGATION_CONFIG = {
     {
       group: 'System',
       items: [
-        { id: 'admin-notifications', label: 'Notifications', route: '/notifications', icon: Bell },
         { id: 'admin-settings', label: 'System Settings', route: '/settings/profile', icon: Settings },
       ],
     },

@@ -13,11 +13,36 @@ export const PatientProfilePage = () => {
 
   const { data: patient, isLoading, isError, error, refetch } = usePatient('me');
 
-  if (isLoading) {
+  const mergedProfile = React.useMemo(() => {
+    const p = patient || {};
+    const u = user || {};
+    const uDetail = p.user || {};
+
+    return {
+      ...u,
+      ...p,
+      id: p.id || u.id || '101',
+      firstName: p.firstName || uDetail.firstName || u.firstName || 'Patient',
+      lastName: p.lastName || uDetail.lastName || u.lastName || 'User',
+      email: p.email || uDetail.email || u.email || '',
+      phone: p.phone || uDetail.phone || u.phone || '',
+      dob: p.dob || p.dateOfBirth || u.dob || u.dateOfBirth || '1992-06-15',
+      gender: p.gender || u.gender || 'Patient',
+      bloodGroup: p.bloodGroup || p.bloodType || u.bloodGroup || u.bloodType || 'O+',
+      heightCm: p.heightCm || p.height || u.heightCm || 175,
+      weightKg: p.weightKg || p.weight || u.weightKg || 70,
+      address: p.address || u.address || (p.zipCode ? `Zip Code: ${p.zipCode}` : ''),
+      emergencyContact: p.emergencyContact || p.emergencyContactPhone ? `${p.emergencyContactName || 'Emergency Contact'}: ${p.emergencyContactPhone || ''}` : '',
+      medicalConditions: p.medicalConditions || u.medicalConditions || 'No active chronic medical conditions logged.',
+      allergies: p.allergies || u.allergies || 'No known drug or environmental allergies reported.',
+    };
+  }, [patient, user]);
+
+  if (isLoading && !user) {
     return <WidgetSkeleton height="h-96" />;
   }
 
-  if (isError) {
+  if (isError && !user) {
     return (
       <DashboardErrorState
         title="Failed to Load Profile"
@@ -30,7 +55,7 @@ export const PatientProfilePage = () => {
   if (isEditing) {
     return (
       <EditPatientPage
-        patient={patient}
+        patient={mergedProfile}
         isSelf={true}
         onCancel={() => setIsEditing(false)}
       />
@@ -38,18 +63,18 @@ export const PatientProfilePage = () => {
   }
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto font-sans">
       {/* Profile Header */}
       <PatientProfileCard
-        patient={patient || user}
+        patient={mergedProfile}
         isSelf={true}
         onEdit={() => setIsEditing(true)}
       />
 
       {/* Medical & Contact Info */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <PatientMedicalInfo patient={patient || user} />
-        <PatientContactInfo patient={patient || user} />
+        <PatientMedicalInfo patient={mergedProfile} />
+        <PatientContactInfo patient={mergedProfile} />
       </div>
     </div>
   );

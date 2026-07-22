@@ -14,6 +14,7 @@ const toAppointmentDto = (app) => {
     reason: app.reason,
     notes: app.notes,
     status: app.status,
+    type: app.appointmentType === 'Online' ? 'Video Consultation' : 'In-Person',
     createdAt: app.createdAt,
     doctor: app.doctor ? {
       id: app.doctor.id,

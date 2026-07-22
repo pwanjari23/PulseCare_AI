@@ -37,4 +37,15 @@ router.get(
   dashboardController.getAdminDashboard
 );
 
+/**
+ * GET /api/v1/dashboard/recent-activity
+ * Access restricted to Admin role.
+ */
+router.get(
+  '/recent-activity',
+  authenticate,
+  authorize('Admin'),
+  dashboardController.getRecentActivity
+);
+
 module.exports = router;

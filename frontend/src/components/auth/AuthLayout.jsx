@@ -1,4 +1,5 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import AuthIllustration from './AuthIllustration';
 
 export const AuthLayout = ({ children, illustrationType = 'general' }) => {
@@ -18,7 +19,7 @@ export const AuthLayout = ({ children, illustrationType = 'general' }) => {
 
         {/* Right Side: Auth Form Container */}
         <div className="col-span-1 lg:col-span-7 flex justify-center w-full">
-          {children}
+          {children || <Outlet />}
         </div>
       </div>
     </div>

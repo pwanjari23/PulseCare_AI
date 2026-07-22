@@ -10,12 +10,19 @@ export const healthSummaryApi = {
    */
   getMySummary: async () => {
     try {
-      const res = await axiosInstance.get('/health-summary/me');
-      return res;
+      return await axiosInstance.get('/health-summary/me');
     } catch (err) {
-      if (err.status === 404 || err.response?.status === 404) {
-        const fallbackRes = await axiosInstance.get('/health-summary');
-        return fallbackRes;
+      const status = err.status || err.response?.status;
+      if (status === 404 || status === 403) {
+        try {
+          return await axiosInstance.get('/health-summary');
+        } catch (innerErr) {
+          const innerStatus = innerErr.status || innerErr.response?.status;
+          if (innerStatus === 404 || innerStatus === 403) {
+            return null;
+          }
+          throw innerErr;
+        }
       }
       throw err;
     }
@@ -26,12 +33,19 @@ export const healthSummaryApi = {
    */
   getPatientSummary: async (patientId) => {
     try {
-      const res = await axiosInstance.get(`/health-summary/patient/${patientId}`);
-      return res;
+      return await axiosInstance.get(`/health-summary/patient/${patientId}`);
     } catch (err) {
-      if (err.status === 404 || err.response?.status === 404) {
-        const fallbackRes = await axiosInstance.get(`/health-summary/${patientId}`);
-        return fallbackRes;
+      const status = err.status || err.response?.status;
+      if (status === 404 || status === 403) {
+        try {
+          return await axiosInstance.get(`/health-summary/${patientId}`);
+        } catch (innerErr) {
+          const innerStatus = innerErr.status || innerErr.response?.status;
+          if (innerStatus === 404 || innerStatus === 403) {
+            return null;
+          }
+          throw innerErr;
+        }
       }
       throw err;
     }

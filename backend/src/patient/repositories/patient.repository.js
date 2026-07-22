@@ -115,6 +115,56 @@ const updateProfileCompletion = async (id, percentage, transaction) => {
   );
 };
 
+/**
+ * Finds all patients in the database.
+ */
+const findAllPatients = async (transaction) => {
+  return Patient.findAll({
+    include: [{ model: User, as: 'user', attributes: { exclude: ['passwordHash', 'password_hash'] } }],
+    transaction
+  });
+};
+
+/**
+ * Finds patients with clinical relationship to the doctor.
+ */
+const findPatientsForDoctor = async (doctorId, transaction) => {
+  const patientIds = new Set();
+
+  // 1. Primary Doctor assignment
+  const primaryDocPatients = await Patient.findAll({
+    attributes: ['id'],
+    where: { primaryDoctorId: doctorId },
+    transaction
+  });
+  primaryDocPatients.forEach(p => patientIds.add(Number(p.id)));
+
+  // 2. Accepted Doctor Request
+  const acceptedRequests = await DoctorRequest.findAll({
+    attributes: ['patientId'],
+    where: { doctorId, status: 'Accepted' },
+    transaction
+  });
+  acceptedRequests.forEach(r => patientIds.add(Number(r.patientId)));
+
+  // 3. Appointments
+  const appointments = await Appointment.findAll({
+    attributes: ['patientId'],
+    where: { doctorId },
+    transaction
+  });
+  appointments.forEach(a => patientIds.add(Number(a.patientId)));
+
+  const ids = Array.from(patientIds);
+  if (ids.length === 0) return [];
+
+  return Patient.findAll({
+    where: { id: ids },
+    include: [{ model: User, as: 'user', attributes: { exclude: ['passwordHash', 'password_hash'] } }],
+    transaction
+  });
+};
+
 module.exports = {
   findPatientByUserId,
   findPatientById,
@@ -123,5 +173,7 @@ module.exports = {
   findAcceptedDoctorRequest,
   findAppointment,
   updatePatientProfile,
-  updateProfileCompletion
+  updateProfileCompletion,
+  findAllPatients,
+  findPatientsForDoctor
 };

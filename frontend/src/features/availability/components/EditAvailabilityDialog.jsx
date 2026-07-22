@@ -40,7 +40,13 @@ export const EditAvailabilityDialog = ({ isOpen, onClose, block }) => {
   }, [block, reset]);
 
   const onSubmit = (data) => {
-    updateMutation.mutate({ id: block.id, ...data }, {
+    const payload = {
+      id: block.id,
+      dayOfWeek: data.dayOfWeek,
+      startTime: data.startTime.length === 4 ? `0${data.startTime}` : data.startTime,
+      endTime: data.endTime.length === 4 ? `0${data.endTime}` : data.endTime,
+    };
+    updateMutation.mutate(payload, {
       onSuccess: () => onClose(),
     });
   };

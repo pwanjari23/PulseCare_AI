@@ -117,7 +117,7 @@ export const QUICK_ACTIONS = [
   {
     id: 'view-reports',
     label: 'Platform Reports',
-    description: 'System telemetry & analytics',
+    description: 'View platform stats & analytics',
     route: '/admin/reports',
     icon: 'BarChart3',
     color: 'text-purple-500 bg-purple-500/10 border-purple-500/20',
@@ -133,7 +133,7 @@ export const QUICK_ACTIONS = [
   {
     id: 'system-settings',
     label: 'System Settings',
-    description: 'Configure security & API keys',
+    description: 'Configure platform settings & preferences',
     route: '/admin/settings',
     icon: 'Settings',
     color: 'text-indigo-500 bg-indigo-500/10 border-indigo-500/20',

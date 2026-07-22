@@ -89,6 +89,7 @@ import {
 import { useAuthStore } from '../stores/auth.store';
 import { ROLES } from '../constants/roles';
 import { ROUTES } from '../constants/routes';
+import TelehealthRoom from '../pages/appointments/TelehealthRoom';
 
 // Redirect helper for /dashboard root path
 export const DashboardHomeRedirect = () => {
@@ -104,6 +105,17 @@ export const DashboardHomeRedirect = () => {
   return <Navigate to={ROUTES.UNAUTHORIZED} replace />;
 };
 
+// Redirect helper for /profile root path
+export const ProfileHomeRedirect = () => {
+  const { user } = useAuthStore();
+  const role = user?.role?.toLowerCase() || '';
+
+  if (role === ROLES.DOCTOR.toLowerCase()) {
+    return <DoctorProfilePage />;
+  }
+  return <PatientProfilePage />;
+};
+
 export const DashboardRoutes = (
   <Route element={<ProtectedRoute />}>
     {/* Base Dashboard Layout Wrapper */}
@@ -111,22 +123,28 @@ export const DashboardRoutes = (
       {/* Route redirect handler for /dashboard */}
       <Route path={ROUTES.DASHBOARD} element={<DashboardHomeRedirect />} />
 
-      {/* Shared Profile Route */}
-      <Route path="/profile" element={<PatientProfilePage />} />
+      {/* Shared Profile Routes */}
+      <Route path="/profile" element={<ProfileHomeRedirect />} />
+      <Route path="/patient/profile" element={<PatientProfilePage />} />
+      <Route path="/patient/profile/edit" element={<PatientProfilePage />} />
 
       {/* Shared Doctor Directory & Details Routes */}
       <Route path="/doctors" element={<DoctorsPage />} />
       <Route path="/doctors/:id" element={<DoctorDetailsPage />} />
+      <Route path="/patient/doctors" element={<DoctorsPage />} />
+      <Route path="/patient/doctors/:id" element={<DoctorDetailsPage />} />
 
-      {/* Doctor-Only Profile Management Routes */}
+      {/* Doctor-Only Profile & Alerts Routes */}
       <Route element={<ProtectedRoute allowedRoles={[ROLES.DOCTOR]} />}>
         <Route path="/doctor/profile" element={<DoctorProfilePage />} />
         <Route path="/doctor/profile/edit" element={<EditDoctorProfilePage />} />
+        <Route path="/doctor/vital-alerts" element={<VitalAnalyticsPage />} />
       </Route>
 
       {/* Admin-Only Doctor Verification & Management Routes */}
       <Route element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]} />}>
         <Route path="/admin/doctors" element={<DoctorVerificationPage />} />
+        <Route path="/admin/approvals" element={<DoctorVerificationPage />} />
       </Route>
 
       {/* Shared Patient Directory Routes (Doctor & Admin) */}
@@ -141,6 +159,7 @@ export const DashboardRoutes = (
       <Route path="/appointments/book" element={<BookAppointmentPage />} />
       <Route path="/appointments/calendar" element={<AppointmentCalendarPage />} />
       <Route path="/appointments/:id" element={<AppointmentDetailsPage />} />
+      <Route path="/appointments/:id/video" element={<TelehealthRoom />} />
 
       {/* Shared Vital Signs Routes */}
       <Route path="/vitals" element={<VitalRecordsPage />} />
@@ -175,11 +194,14 @@ export const DashboardRoutes = (
       <Route element={<ProtectedRoute allowedRoles={[ROLES.DOCTOR]} />}>
         <Route path={ROUTES.DOCTOR.DASHBOARD} element={<DoctorDashboard />} />
         <Route path={ROUTES.DOCTOR.AVAILABILITY} element={<AvailabilityPage />} />
+        <Route path="/availability" element={<AvailabilityPage />} />
         <Route path="/doctor/availability/schedule" element={<WeeklySchedulePage />} />
         <Route path="/doctor/availability/holidays" element={<HolidayManagementPage />} />
         <Route path="/doctor/availability/preview" element={<SlotPreviewPage />} />
         <Route path={ROUTES.DOCTOR.APPOINTMENTS} element={<DoctorAppointmentsPage />} />
         <Route path={ROUTES.DOCTOR.PATIENTS} element={<PatientsPage />} />
+        <Route path="/doctor/patients/:id" element={<PatientDetailsPage />} />
+        <Route path="/doctor/patients/:id/edit" element={<EditPatientPage />} />
         <Route path="/doctor/prescriptions" element={<PrescriptionsPage />} />
         <Route path="/doctor/notes" element={<DoctorNotesPage />} />
       </Route>
@@ -189,6 +211,7 @@ export const DashboardRoutes = (
         <Route path={ROUTES.PATIENT.DASHBOARD} element={<PatientDashboard />} />
         <Route path={ROUTES.PATIENT.VITALS} element={<PatientVitalsPage />} />
         <Route path="/patient/vitals" element={<PatientVitalsPage />} />
+        <Route path="/patient/vitals/new" element={<AddVitalRecordPage />} />
         <Route path={ROUTES.PATIENT.APPOINTMENTS} element={<PatientAppointmentsPage />} />
         <Route path="/patient/appointments/book" element={<BookAppointmentPage />} />
         <Route path={ROUTES.PATIENT.PRESCRIPTIONS} element={<PatientPrescriptionsPage />} />

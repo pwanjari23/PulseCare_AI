@@ -16,7 +16,7 @@ export const ProtectedRoute = ({ allowedRoles }) => {
     return <Navigate to={ROUTES.LOGIN} state={{ from: location }} replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user?.role)) {
+  if (allowedRoles && !allowedRoles.some((r) => r.toLowerCase() === user?.role?.toLowerCase())) {
     return <Navigate to={ROUTES.UNAUTHORIZED} replace />;
   }
 

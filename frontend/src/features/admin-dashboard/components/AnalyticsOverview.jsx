@@ -51,15 +51,15 @@ export const AnalyticsOverview = ({ data, className = '' }) => {
           </p>
         </div>
 
-        {/* System Load */}
+        {/* Active Telemetry Alerts */}
         <div className="space-y-2 sm:border-l border-border/40 sm:pl-6">
-          <span className="text-xs font-mono uppercase text-muted-foreground">Platform Infrastructure</span>
-          <div className="flex items-center space-x-2 text-xs font-bold text-foreground">
-            <ShieldCheck className="w-4 h-4 text-emerald-500" />
-            <span>99.98% Service Uptime</span>
+          <span className="text-xs font-mono uppercase text-muted-foreground">Active Telemetry Alerts</span>
+          <div className="flex items-baseline space-x-2">
+            <span className="text-2xl font-black text-foreground font-mono">{data?.openAlertsCount || 0}</span>
+            <span className="text-xs text-muted-foreground">Critical Vital Warnings</span>
           </div>
-          <p className="text-[11px] text-muted-foreground font-mono">
-            Heap: {data?.systemStats?.memoryUsageMB || 128} MB Memory
+          <p className="text-[11px] text-rose-600 dark:text-rose-400 font-mono font-semibold">
+            Require immediate physician review
           </p>
         </div>
       </div>

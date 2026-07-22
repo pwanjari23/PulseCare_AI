@@ -29,4 +29,10 @@ router.get('/doctor/:id', authenticate, authorize('Doctor'), patientController.g
  */
 router.get('/admin/:id', authenticate, authorize('Admin'), patientController.getPatientForAdmin);
 
+/**
+ * Retrieve all patients (Admin / Doctor list view)
+ * GET /api/v1/patients
+ */
+router.get('/', authenticate, authorize('Doctor', 'Admin'), patientController.getPatients);
+
 module.exports = router;

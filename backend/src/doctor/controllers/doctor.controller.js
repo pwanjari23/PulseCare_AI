@@ -79,9 +79,24 @@ const getProfileForAdmin = async (req, res, next) => {
   }
 };
 
+/**
+ * Retrieves all doctors list.
+ */
+const getDoctors = async (req, res, next) => {
+  try {
+    const list = await doctorService.getDoctors();
+    return res.status(200).json(
+      new ApiResponse(200, list, 'Doctors retrieved successfully.')
+    );
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   getMyProfile,
   updateMyProfile,
   getPublicProfile,
-  getProfileForAdmin
+  getProfileForAdmin,
+  getDoctors
 };

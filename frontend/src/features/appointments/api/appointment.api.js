@@ -1,69 +1,80 @@
 import axiosInstance from '../../../services/api/axios';
 
+const normalizeAppointment = (app) => {
+  if (!app) return null;
+  const rawDate = app.scheduledAt || app.appointmentAt || app.date || new Date().toISOString();
+  const dateObj = new Date(rawDate);
+  const validDate = isNaN(dateObj.getTime()) ? new Date() : dateObj;
+
+  const dateStr = validDate.toISOString().split('T')[0];
+  const timeStr = validDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const doctorObj = app.doctor || {};
+  const patientObj = app.patient || {};
+
+  const doctorName = app.doctorName || (doctorObj.firstName ? `Dr. ${doctorObj.firstName} ${doctorObj.lastName || ''}` : 'Dr. Specialist');
+  const patientName = app.patientName || (patientObj.firstName ? `${patientObj.firstName} ${patientObj.lastName || ''}` : 'Patient');
+
+  return {
+    ...app,
+    id: app.id,
+    date: app.date || dateStr,
+    slotTime: app.slotTime || timeStr,
+    scheduledAt: rawDate,
+    doctorId: app.doctorId || doctorObj.id,
+    patientId: app.patientId || patientObj.id,
+    doctorName,
+    patientName,
+    specialization: app.specialization || doctorObj.specialization || 'General Practice',
+    status: app.status || 'Scheduled',
+  };
+};
+
+const normalizeResponse = (res) => {
+  if (!res) return [];
+  if (Array.isArray(res)) return res.map(normalizeAppointment);
+  if (Array.isArray(res.appointments)) {
+    return {
+      ...res,
+      appointments: res.appointments.map(normalizeAppointment),
+    };
+  }
+  return normalizeAppointment(res);
+};
+
 export const appointmentApi = {
   // Get all appointments (Admin/General)
   getAppointments: async (params) => {
     try {
-      return await axiosInstance.get('/appointments', { params });
+      const res = await axiosInstance.get('/appointments', { params });
+      return normalizeResponse(res);
     } catch (e) {
       console.warn('GET /appointments fallback to mock appointment data:', e?.message);
-      return {
-        appointments: [
-          {
-            id: 201,
-            patientName: 'John Doe',
-            patientId: 101,
-            doctorName: 'Dr. Sarah Jenkins',
-            doctorId: 1,
-            specialization: 'Cardiology',
-            date: new Date().toISOString().split('T')[0],
-            slotTime: '10:30 AM',
-            status: 'Confirmed',
-            type: 'In-Person',
-            reason: 'Routine ECG checkup & hypertension consultation',
-            consultationFee: 120,
-            hospital: 'St. Jude Medical Center',
-          },
-          {
-            id: 202,
-            patientName: 'Emma Watson',
-            patientId: 102,
-            doctorName: 'Dr. Gregory House',
-            doctorId: 2,
-            specialization: 'Neurology',
-            date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
-            slotTime: '02:00 PM',
-            status: 'Pending',
-            type: 'Video Consultation',
-            reason: 'Chronic migraine telemetry review',
-            consultationFee: 150,
-            hospital: 'Princeton-Plainsboro Hospital',
-          },
-          {
-            id: 203,
-            patientName: 'Robert Downey',
-            patientId: 103,
-            doctorName: 'Dr. Aria Stark',
-            doctorId: 3,
-            specialization: 'General Medicine',
-            date: new Date(Date.now() - 172800000).toISOString().split('T')[0],
-            slotTime: '09:00 AM',
-            status: 'Completed',
-            type: 'In-Person',
-            reason: 'Annual blood panel consultation',
-            consultationFee: 90,
-            hospital: 'Metro Health Hospital',
-          },
-        ],
-        total: 3,
-      };
+      return normalizeResponse([
+        {
+          id: 201,
+          patientName: 'John Doe',
+          patientId: 101,
+          doctorName: 'Dr. Sarah Jenkins',
+          doctorId: 1,
+          specialization: 'Cardiology',
+          date: new Date().toISOString().split('T')[0],
+          slotTime: '10:30 AM',
+          status: 'Confirmed',
+          type: 'In-Person',
+          reason: 'Routine ECG checkup & hypertension consultation',
+          consultationFee: 120,
+          hospital: 'St. Jude Medical Center',
+        },
+      ]);
     }
   },
 
   // Patient's own appointments
   getMyAppointments: async (params) => {
     try {
-      return await axiosInstance.get('/appointments/me', { params });
+      const res = await axiosInstance.get('/appointments/me', { params });
+      return normalizeResponse(res);
     } catch (e) {
       return appointmentApi.getAppointments(params);
     }
@@ -72,7 +83,8 @@ export const appointmentApi = {
   // Doctor's own appointments
   getDoctorAppointments: async (params) => {
     try {
-      return await axiosInstance.get('/appointments/doctor', { params });
+      const res = await axiosInstance.get('/appointments/doctor', { params });
+      return normalizeResponse(res);
     } catch (e) {
       return appointmentApi.getAppointments(params);
     }
@@ -81,9 +93,10 @@ export const appointmentApi = {
   // Get single appointment details by ID
   getAppointmentById: async (id) => {
     try {
-      return await axiosInstance.get(`/appointments/${id}`);
+      const res = await axiosInstance.get(`/appointments/${id}`);
+      return normalizeAppointment(res);
     } catch (e) {
-      return {
+      return normalizeAppointment({
         id: Number(id) || 201,
         patientName: 'John Doe',
         patientId: 101,
@@ -97,14 +110,42 @@ export const appointmentApi = {
         reason: 'Routine ECG checkup & hypertension consultation',
         consultationFee: 120,
         hospital: 'St. Jude Medical Center',
-        clinicalNotes: 'Patient reports stable blood pressure readings with current regimen.',
-      };
+      });
     }
   },
 
   // Book a new appointment
   bookAppointment: (data) => {
-    return axiosInstance.post('/appointments', data);
+    let scheduledAt = data.scheduledAt;
+    if (!scheduledAt && (data.date || data.scheduledDate)) {
+      const dateStr = data.date || data.scheduledDate;
+      const slotTimeStr = data.slotTime || data.timeSlot || '10:00 AM';
+      const match = slotTimeStr.match(/(\d+):(\d+)\s*(AM|PM)?/i);
+      let hours = 10;
+      let minutes = 0;
+      if (match) {
+        hours = parseInt(match[1], 10);
+        minutes = parseInt(match[2], 10);
+        const ampm = match[3];
+        if (ampm) {
+          if (ampm.toUpperCase() === 'PM' && hours < 12) hours += 12;
+          if (ampm.toUpperCase() === 'AM' && hours === 12) hours = 0;
+        }
+      }
+      const hh = String(hours).padStart(2, '0');
+      const mm = String(minutes).padStart(2, '0');
+      const dateObj = new Date(`${dateStr}T${hh}:${mm}:00`);
+      scheduledAt = isNaN(dateObj.getTime()) ? new Date(Date.now() + 86400000).toISOString() : dateObj.toISOString();
+    }
+
+    const payload = {
+      doctorId: Number(data.doctorId),
+      scheduledAt: scheduledAt || new Date(Date.now() + 86400000).toISOString(),
+      reason: data.reason || data.symptoms || 'General Medical Consultation',
+      durationMinutes: Number(data.durationMinutes || 30),
+    };
+
+    return axiosInstance.post('/appointments', payload);
   },
 
   // Cancel an appointment

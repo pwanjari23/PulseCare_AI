@@ -90,10 +90,28 @@ const updateProfileCompletion = async (id, percentage, transaction) => {
   );
 };
 
+const findAllDoctors = async (transaction) => {
+  return Doctor.findAll({
+    include: [
+      {
+        model: User,
+        as: 'user',
+        attributes: { exclude: ['passwordHash', 'password_hash'] }
+      },
+      {
+        model: Specialization,
+        as: 'specialization'
+      }
+    ],
+    transaction
+  });
+};
+
 module.exports = {
   findDoctorByUserId,
   findDoctorById,
   findDoctorWithSpecialization,
   updateDoctorProfile,
-  updateProfileCompletion
+  updateProfileCompletion,
+  findAllDoctors
 };

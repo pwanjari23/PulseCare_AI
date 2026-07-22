@@ -23,4 +23,10 @@ router.put('/me', authenticate, authorize('Doctor'), updateProfileRules, doctorC
  */
 router.get('/:id', doctorController.getPublicProfile);
 
+/**
+ * Retrieve all doctors list
+ * GET /api/v1/doctors
+ */
+router.get('/', authenticate, authorize('Doctor', 'Admin', 'Patient'), doctorController.getDoctors);
+
 module.exports = router;

@@ -17,7 +17,8 @@ export const useCreateAvailability = () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.AVAILABILITY] });
     },
     onError: (err) => {
-      toast.error(err?.message || 'Failed to create availability block');
+      const msg = err?.response?.data?.message || err?.message || 'Failed to create availability block';
+      toast.error(msg);
     },
   });
 };

@@ -26,15 +26,22 @@ export const PatientAppointmentsPage = () => {
 
   const allAppointments = useMemo(() => {
     if (Array.isArray(data)) return data;
-    if (data?.appointments) return data.appointments;
+    if (data?.appointments && Array.isArray(data.appointments)) return data.appointments;
     return [];
   }, [data]);
 
   const filtered = useMemo(() => {
-    if (activeTab === 'Upcoming') return allAppointments.filter((a) => a.date >= today && !['Cancelled', 'Completed'].includes(a.status));
-    if (activeTab === 'Past') return allAppointments.filter((a) => a.date < today || a.status === 'Completed');
-    if (activeTab === 'Cancelled') return allAppointments.filter((a) => a.status === 'Cancelled');
-    return allAppointments;
+    return allAppointments.filter((a) => {
+      const apptDate = a.date || (a.scheduledAt ? a.scheduledAt.split('T')[0] : '');
+      const isUpcoming = (apptDate >= today || !apptDate) && !['Cancelled', 'Completed'].includes(a.status);
+      const isPast = (apptDate < today && apptDate !== '') || a.status === 'Completed';
+      const isCancelled = a.status === 'Cancelled';
+
+      if (activeTab === 'Upcoming') return isUpcoming;
+      if (activeTab === 'Past') return isPast;
+      if (activeTab === 'Cancelled') return isCancelled;
+      return true;
+    });
   }, [allAppointments, activeTab, today]);
 
   return (

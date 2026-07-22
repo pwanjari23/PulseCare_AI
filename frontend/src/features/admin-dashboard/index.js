@@ -11,7 +11,6 @@ export { StatisticsCards } from './components/StatisticsCards';
 export { AnalyticsOverview } from './components/AnalyticsOverview';
 export { QuickActions } from './components/QuickActions';
 export { RecentActivity } from './components/RecentActivity';
-export { SystemHealthCard } from './components/SystemHealthCard';
 export { UserStatistics } from './components/UserStatistics';
 export { AppointmentStatistics } from './components/AppointmentStatistics';
 export { RevenueOverview } from './components/RevenueOverview';
@@ -34,7 +33,6 @@ export { useDashboard } from './hooks/useDashboard';
 export { useDashboardStatistics } from './hooks/useDashboardStatistics';
 export { useDashboardCharts } from './hooks/useDashboardCharts';
 export { useRecentActivity } from './hooks/useRecentActivity';
-export { useSystemHealth } from './hooks/useSystemHealth';
 
 // Constants & Utils
 export {

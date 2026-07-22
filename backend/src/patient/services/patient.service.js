@@ -185,9 +185,26 @@ const getPatientForAdmin = async (id) => {
   return toPrivatePatientDto(patient);
 };
 
+/**
+ * Retrieves list of patients based on role (Admin or Doctor).
+ */
+const getPatients = async (user) => {
+  let patients = [];
+  if (user.role === 'Admin') {
+    patients = await patientRepository.findAllPatients();
+  } else if (user.role === 'Doctor') {
+    patients = await patientRepository.findPatientsForDoctor(user.id);
+  } else {
+    throw new ApiError(403, 'Unauthorized to view patients directory.');
+  }
+
+  return patients.map(p => toPrivatePatientDto(p));
+};
+
 module.exports = {
   getMyProfile,
   updateMyProfile,
   getPatientForDoctor,
-  getPatientForAdmin
+  getPatientForAdmin,
+  getPatients
 };
