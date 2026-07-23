@@ -41,7 +41,21 @@ export const vitalApi = {
    * Record a new vital sign entry
    */
   recordVital: async (data) => {
-    const res = await axiosInstance.post('/vitals', data);
+    const payload = {
+      heartRate: Number(data.heartRate),
+      spo2: Number(data.oxygenLevel),
+      temperature: Number(data.temperature),
+      systolicBp: Number(data.systolicBp),
+      diastolicBp: Number(data.diastolicBp),
+      ...(data.bloodGlucoseMgdl ? { glucose: Number(data.bloodGlucoseMgdl) } : {}),
+      ...(data.weight ? { weightKg: Number(data.weight) } : {}),
+      ...(data.height ? { heightCm: Number(data.height) } : {}),
+      ...(data.patientId ? { patientId: Number(data.patientId) } : {}),
+      ...(data.notes ? { notes: data.notes } : {}),
+      ...(data.painLevel !== undefined && data.painLevel !== null ? { painLevel: Number(data.painLevel) } : {}),
+      ...(data.recordedAt ? { recordedAt: new Date(data.recordedAt).toISOString() } : {}),
+    };
+    const res = await axiosInstance.post('/vitals', payload);
     return res.data?.data || res.data;
   },
 
@@ -49,7 +63,21 @@ export const vitalApi = {
    * Update an existing vital record
    */
   updateVital: async (id, data) => {
-    const res = await axiosInstance.put(`/vitals/${id}`, data);
+    const payload = {
+      heartRate: Number(data.heartRate),
+      spo2: Number(data.oxygenLevel),
+      temperature: Number(data.temperature),
+      systolicBp: Number(data.systolicBp),
+      diastolicBp: Number(data.diastolicBp),
+      ...(data.bloodGlucoseMgdl ? { glucose: Number(data.bloodGlucoseMgdl) } : {}),
+      ...(data.weight ? { weightKg: Number(data.weight) } : {}),
+      ...(data.height ? { heightCm: Number(data.height) } : {}),
+      ...(data.patientId ? { patientId: Number(data.patientId) } : {}),
+      ...(data.notes ? { notes: data.notes } : {}),
+      ...(data.painLevel !== undefined && data.painLevel !== null ? { painLevel: Number(data.painLevel) } : {}),
+      ...(data.recordedAt ? { recordedAt: new Date(data.recordedAt).toISOString() } : {}),
+    };
+    const res = await axiosInstance.put(`/vitals/${id}`, payload);
     return res.data?.data || res.data;
   },
 

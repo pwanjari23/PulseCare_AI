@@ -42,6 +42,14 @@
   --text-secondary: #4b5563;
   --text-muted: #6b7280;
   --text-disabled: #9ca3af;
+
+  /* Accent, Muted & Destructive - Light Mode */
+  --accent: #f3f4f6;
+  --accent-foreground: #111827;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
 }
 
 :root.dark {
@@ -60,6 +68,14 @@
   --text-secondary: #cbd5e1;
   --text-muted: #9ca3af;
   --text-disabled: #4b5563;
+
+  /* Accent, Muted & Destructive - Dark Mode */
+  --accent: #1e293b;
+  --accent-foreground: #f9fafb;
+  --muted: #1e293b;
+  --muted-foreground: #9ca3af;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
 }
 
 @theme {
@@ -129,6 +145,35 @@
   /* Alert Colors mapping for old color names */
   --color-danger-500: var(--danger-600);
   --color-success-500: var(--success-600);
+
+  /* Core Theme Aliases */
+  --color-primary: var(--primary-600);
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: var(--secondary-500);
+  --color-secondary-foreground: #ffffff;
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-background: var(--bg-page);
+  --color-foreground: var(--text-primary);
+
+  --color-card: var(--bg-card);
+  --color-card-foreground: var(--text-primary);
+
+  --color-popover: var(--bg-popover);
+  --color-popover-foreground: var(--text-popover);
+
+  --color-border: var(--border-light);
+  --color-input: var(--border-light);
+  --color-ring: var(--primary-500);
 
   /* Typography Font Sizes */
   --font-size-display: 2.5rem;

@@ -99,11 +99,17 @@ const recordVital = async (patientUserId, data, metadata = {}) => {
   const weight = data.weightKg || patient.weightKg;
   const bmi = (weight && height) ? Number((weight / Math.pow(height / 100, 2)).toFixed(1)) : null;
 
+  // Convert temperature to Fahrenheit if in Celsius (e.g. < 50.0)
+  let temperature = data.temperature;
+  if (temperature !== undefined && temperature !== null && temperature < 50.0) {
+    temperature = Number((temperature * 9 / 5 + 32).toFixed(1));
+  }
+
   // Evaluate alerts
   const alertGenerated = evaluateAlertConditions({
     heartRate: data.heartRate,
     spo2: data.spo2,
-    temperature: data.temperature,
+    temperature,
     systolicBp: data.systolicBp,
     diastolicBp: data.diastolicBp,
     glucose: data.glucose,
@@ -121,7 +127,7 @@ const recordVital = async (patientUserId, data, metadata = {}) => {
       patientId: patient.id,
       heartRate: data.heartRate,
       oxygenLevel: data.spo2,
-      temperature: data.temperature,
+      temperature,
       systolicBp: data.systolicBp,
       diastolicBp: data.diastolicBp,
       bloodGlucoseMgdl: data.glucose || null,
@@ -268,10 +274,18 @@ const updateVital = async (patientUserId, id, data, metadata = {}) => {
   const weight = data.weightKg !== undefined ? data.weightKg : log.weight;
   const bmi = (weight && height) ? Number((weight / Math.pow(height / 100, 2)).toFixed(1)) : null;
 
+  // Convert temperature to Fahrenheit if in Celsius (e.g. < 50.0)
+  let temperature = data.temperature;
+  if (temperature !== undefined && temperature !== null && temperature < 50.0) {
+    temperature = Number((temperature * 9 / 5 + 32).toFixed(1));
+  } else if (temperature === undefined) {
+    temperature = log.temperature;
+  }
+
   const alertGenerated = evaluateAlertConditions({
     heartRate: data.heartRate !== undefined ? data.heartRate : log.heartRate,
     spo2: data.spo2 !== undefined ? data.spo2 : log.oxygenLevel,
-    temperature: data.temperature !== undefined ? data.temperature : log.temperature,
+    temperature,
     systolicBp: data.systolicBp !== undefined ? data.systolicBp : log.systolicBp,
     diastolicBp: data.diastolicBp !== undefined ? data.diastolicBp : log.diastolicBp,
     glucose: data.glucose !== undefined ? data.glucose : log.bloodGlucoseMgdl,
@@ -286,7 +300,7 @@ const updateVital = async (patientUserId, id, data, metadata = {}) => {
     await vitalRepository.updateVital(id, {
       heartRate: data.heartRate,
       oxygenLevel: data.spo2,
-      temperature: data.temperature,
+      temperature: data.temperature !== undefined ? (data.temperature < 50.0 ? Number((data.temperature * 9 / 5 + 32).toFixed(1)) : data.temperature) : undefined,
       systolicBp: data.systolicBp,
       diastolicBp: data.diastolicBp,
       bloodGlucoseMgdl: data.glucose || null,

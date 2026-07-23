@@ -1,8 +1,21 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import AuthIllustration from './AuthIllustration';
+import { ROUTES } from '../../constants/routes';
 
-export const AuthLayout = ({ children, illustrationType = 'general' }) => {
+export const AuthLayout = ({ children }) => {
+  const location = useLocation();
+  const path = location.pathname;
+
+  let illustrationType = 'general';
+  if (path === ROUTES.LOGIN) {
+    illustrationType = 'login';
+  } else if (path === ROUTES.REGISTER_PATIENT || path === '/register') {
+    illustrationType = 'patient-register';
+  } else if (path === ROUTES.REGISTER_DOCTOR) {
+    illustrationType = 'doctor-register';
+  }
+
   return (
     <div className="min-h-screen w-full bg-background flex items-center justify-center p-4 sm:p-6 lg:p-8 relative overflow-hidden transition-colors duration-300">
       {/* Background ambient lighting */}

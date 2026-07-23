@@ -33,7 +33,6 @@ export const Select = React.forwardRef(({
           ref={ref}
           disabled={disabled}
           className={cn(baseSelectStyles, borderStyles)}
-          defaultValue=""
           {...props}
         >
           {placeholder && (

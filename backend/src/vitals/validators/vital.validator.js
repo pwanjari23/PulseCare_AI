@@ -14,7 +14,7 @@ const vitalRules = [
 
   body('temperature')
     .exists().withMessage('Temperature is required')
-    .isFloat({ min: 30.0, max: 45.0 }).withMessage('Temperature must be a decimal between 30.0 and 45.0'),
+    .isFloat({ min: 30.0, max: 115.0 }).withMessage('Temperature must be a decimal between 30.0 and 115.0'),
 
   body('systolicBp')
     .exists().withMessage('Systolic BP is required')
