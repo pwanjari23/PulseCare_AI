@@ -38,6 +38,18 @@ export const ProfileDropdown = () => {
   const userName = user?.firstName ? `${user.firstName} ${user.lastName || ''}` : user?.email || 'PulseCare User';
   const userRole = user?.role || 'Patient';
 
+  const getProfileRoute = () => {
+    switch (userRole.toLowerCase()) {
+      case 'doctor':
+        return '/doctor/profile';
+      case 'admin':
+        return '/settings/profile';
+      default:
+        return '/patient/profile';
+    }
+  };
+  const profileRoute = getProfileRoute();
+
   return (
     <div className="relative" ref={menuRef}>
       <button
@@ -70,7 +82,7 @@ export const ProfileDropdown = () => {
           {/* Menu Actions */}
           <div className="space-y-0.5 py-1">
             <Link
-              to="/patient/profile"
+              to={profileRoute}
               onClick={() => setIsOpen(false)}
               className="flex items-center space-x-2.5 px-3 py-2 text-xs font-semibold text-foreground hover:bg-accent rounded-xl transition-colors"
             >

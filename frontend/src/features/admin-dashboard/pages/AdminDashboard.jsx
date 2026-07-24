@@ -31,6 +31,7 @@ export const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [dateRange, setDateRange] = useState('30d');
   const [department, setDepartment] = useState('ALL');
+  const [activeTab, setActiveTab] = useState('overview');
 
   // React Query hooks
   const { data: dashboardData, isLoading, isError, refetch, isFetching } = useDashboard();
@@ -66,7 +67,7 @@ export const AdminDashboard = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-8 font-sans"
+      className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 font-sans"
     >
       {/* Top Header */}
       <DashboardHeader
@@ -87,40 +88,119 @@ export const AdminDashboard = () => {
         isRefreshing={isFetching}
       />
 
-      {/* Key Performance Metric Cards */}
-      <StatisticsCards data={dashboardData} />
-
-      {/* Quick Action Shortcuts */}
-      <QuickActions />
-
-      {/* Analytical & Demographic Overview */}
-      <AnalyticsOverview data={dashboardData} />
-
-      {/* Interactive Recharts Analytics */}
-      <DashboardCharts />
-
-      {/* Real-Time Activity Log */}
-      <RecentActivity activities={activityData} className="w-full" />
-
-      {/* Domain Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <UserStatistics data={dashboardData} />
-        <AppointmentStatistics data={dashboardData} />
-        <DoctorPerformance data={dashboardData} />
-        <PatientStatistics data={dashboardData} />
-        <HealthSummaryStatistics data={dashboardData} />
-        <NotificationStatistics data={dashboardData} />
-        <RevenueOverview />
-        <UploadsStatistics />
+      {/* Tabs Navigation */}
+      <div className="flex border-b border-border/60 overflow-x-auto whitespace-nowrap scrollbar-none gap-2 pb-px">
+        <button
+          onClick={() => setActiveTab('overview')}
+          className={`pb-3 px-4 text-xs sm:text-sm font-semibold border-b-2 transition-all duration-200 cursor-pointer ${
+            activeTab === 'overview'
+              ? 'border-primary text-primary font-bold'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          System Overview
+        </button>
+        <button
+          onClick={() => setActiveTab('metrics')}
+          className={`pb-3 px-4 text-xs sm:text-sm font-semibold border-b-2 transition-all duration-200 cursor-pointer ${
+            activeTab === 'metrics'
+              ? 'border-primary text-primary font-bold'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          Detailed Metrics
+        </button>
+        <button
+          onClick={() => setActiveTab('activity')}
+          className={`pb-3 px-4 text-xs sm:text-sm font-semibold border-b-2 transition-all duration-200 cursor-pointer ${
+            activeTab === 'activity'
+              ? 'border-primary text-primary font-bold'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          Platform Activity
+        </button>
+        <button
+          onClick={() => setActiveTab('schedules')}
+          className={`pb-3 px-4 text-xs sm:text-sm font-semibold border-b-2 transition-all duration-200 cursor-pointer ${
+            activeTab === 'schedules'
+              ? 'border-primary text-primary font-bold'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          Rosters & Schedules
+        </button>
       </div>
 
-      {/* Tables & Upcoming Schedules Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <TopDoctorsTable doctors={dashboardData?.topDoctors} />
-        <TopPatientsTable patients={dashboardData?.topPatients} />
-      </div>
+      {/* Tab Contents */}
+      <div className="space-y-6">
+        {activeTab === 'overview' && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-6"
+          >
+            {/* Key Performance Metric Cards */}
+            <StatisticsCards data={dashboardData} />
 
-      <UpcomingAppointments appointments={dashboardData?.upcomingAppointments} />
+            {/* Quick Action Shortcuts */}
+            <QuickActions />
+
+            {/* Analytical & Demographic Overview */}
+            <AnalyticsOverview data={dashboardData} />
+
+            {/* Interactive Recharts Analytics */}
+            <DashboardCharts />
+          </motion.div>
+        )}
+
+        {activeTab === 'metrics' && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
+            <UserStatistics data={dashboardData} />
+            <AppointmentStatistics data={dashboardData} />
+            <DoctorPerformance data={dashboardData} />
+            <PatientStatistics data={dashboardData} />
+            <HealthSummaryStatistics data={dashboardData} />
+            <NotificationStatistics data={dashboardData} />
+            <RevenueOverview />
+            <UploadsStatistics />
+          </motion.div>
+        )}
+
+        {activeTab === 'activity' && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* Real-Time Activity Log */}
+            <RecentActivity activities={activityData} className="w-full" />
+          </motion.div>
+        )}
+
+        {activeTab === 'schedules' && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-6"
+          >
+            {/* Tables & Upcoming Schedules Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <TopDoctorsTable doctors={dashboardData?.topDoctors} />
+              <TopPatientsTable patients={dashboardData?.topPatients} />
+            </div>
+
+            <UpcomingAppointments appointments={dashboardData?.upcomingAppointments} />
+          </motion.div>
+        )}
+      </div>
     </motion.div>
   );
 };

@@ -1,6 +1,5 @@
 import React from 'react';
 import { cn } from '../../../utils/cn';
-import { Breadcrumb } from './Breadcrumb';
 
 export const PageHeader = React.forwardRef(({
   className,
@@ -19,9 +18,6 @@ export const PageHeader = React.forwardRef(({
       )}
       {...props}
     >
-      {breadcrumbItems && breadcrumbItems.length > 0 && (
-        <Breadcrumb items={breadcrumbItems} />
-      )}
       
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="space-y-1">
